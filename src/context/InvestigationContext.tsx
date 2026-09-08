@@ -28,10 +28,19 @@ import {
   DEMO_GAPS,
   DEMO_AUDIT_LOGS
 } from '../data/demoData';
+import { Language, LOCALIZATION, Translations } from '../data/localization';
 
 interface InvestigationContextType {
   theme: 'dark' | 'light';
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: keyof Translations) => string;
+  
+  dataSaver: boolean;
+  setDataSaver: (active: boolean) => void;
+  toggleDataSaver: () => void;
+  
   activeTab: string;
   setActiveTab: (tab: string) => void;
   
@@ -74,6 +83,10 @@ interface InvestigationContextType {
   
   isAboutOpen: boolean;
   setIsAboutOpen: (open: boolean) => void;
+
+  isEmergencyModalOpen: boolean;
+  openEmergencyModal: () => void;
+  closeEmergencyModal: () => void;
   
   offlineQueue: OfflineQueueItem[];
   isOnline: boolean;
@@ -87,9 +100,18 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     return (localStorage.getItem('hari_theme') as 'dark' | 'light') || 'dark';
   });
   
+  const [language, setLanguageState] = useState<Language>(() => {
+    return (localStorage.getItem('hari_lang') as Language) || 'EN';
+  });
+
+  const [dataSaver, setDataSaverState] = useState<boolean>(() => {
+    return localStorage.getItem('hari_data_saver') === 'true';
+  });
+  
   const [activeTab, setActiveTab] = useState<string>('command');
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
   
   const [cases, setCases] = useState<Case[]>(() => {
@@ -145,18 +167,24 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  // Save to local storage
-  useEffect(() => {
-    localStorage.setItem('hari_cases', JSON.stringify(cases));
-  }, [cases]);
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('hari_lang', lang);
+  };
 
-  useEffect(() => {
-    localStorage.setItem('hari_evidence', JSON.stringify(evidence));
-  }, [evidence]);
+  const setDataSaver = (active: boolean) => {
+    setDataSaverState(active);
+    localStorage.setItem('hari_data_saver', String(active));
+  };
 
-  useEffect(() => {
-    localStorage.setItem('hari_analyses', JSON.stringify(aiAnalyses));
-  }, [aiAnalyses]);
+  const toggleDataSaver = () => {
+    setDataSaver(!dataSaver);
+  };
+
+  const t = (key: keyof Translations): string => {
+    const dict = LOCALIZATION[language] || LOCALIZATION.EN;
+    return dict[key] || LOCALIZATION.EN[key] || '';
+  };
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -187,7 +215,6 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
 
     addAuditLog('INGEST_EVIDENCE', newE.evidenceId, `Ingested ${newE.category} evidence. Hash: ${newE.hash.substring(0, 12)}...`);
 
-    // If offline, add to queue
     if (!navigator.onLine) {
       const queueItem: OfflineQueueItem = {
         id: `q-${Date.now()}`,
@@ -237,8 +264,8 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     const newLog: AuditLog = {
       id: `aud-${Date.now()}`,
       caseId: currentCase.id,
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      user: 'Insp. M. Vance',
+      timestamp: new Date().toLocaleDateString() + ' • ' + new Date().toLocaleTimeString() + ' IST',
+      user: 'Insp. K. Sundaram',
       action,
       object,
       details
@@ -248,6 +275,9 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const openCamera = () => setIsCameraOpen(true);
   const closeCamera = () => setIsCameraOpen(false);
+
+  const openEmergencyModal = () => setIsEmergencyModalOpen(true);
+  const closeEmergencyModal = () => setIsEmergencyModalOpen(false);
 
   const resetDemoData = () => {
     setCases([DEMO_CASE]);
@@ -271,6 +301,12 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         theme,
         toggleTheme,
+        language,
+        setLanguage,
+        t,
+        dataSaver,
+        setDataSaver,
+        toggleDataSaver,
         activeTab,
         setActiveTab,
         cases,
@@ -303,6 +339,9 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         closeCamera,
         isAboutOpen,
         setIsAboutOpen,
+        isEmergencyModalOpen,
+        openEmergencyModal,
+        closeEmergencyModal,
         offlineQueue,
         isOnline,
         resetDemoData

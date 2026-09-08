@@ -15,11 +15,12 @@ import {
   AlertTriangle,
   FileCheck,
   ShieldCheck,
-  Info
+  Info,
+  PhoneCall
 } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
-  const { activeTab, setActiveTab, openCamera, setIsAboutOpen } = useInvestigation();
+  const { activeTab, setActiveTab, openCamera, setIsAboutOpen, openEmergencyModal, t } = useInvestigation();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   const moreItems = [
@@ -50,7 +51,27 @@ export const BottomNav: React.FC = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5 my-4 flex-1">
+          {/* India 112 Emergency Banner inside Mobile Menu */}
+          <div className="my-3 p-3 bg-red-950/60 border border-red-800 rounded-2xl flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <PhoneCall className="w-4 h-4 text-red-400" />
+              <div>
+                <span className="font-extrabold text-white">INDIA EMERGENCY 112</span>
+                <p className="text-[10px] text-red-300">Nationwide Emergency System</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setIsMoreMenuOpen(false);
+                openEmergencyModal();
+              }}
+              className="px-3 py-1 bg-red-600 text-white rounded-lg font-bold text-[11px]"
+            >
+              CALL 112
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5 my-2 flex-1">
             {moreItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -80,7 +101,7 @@ export const BottomNav: React.FC = () => {
           </div>
 
           <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-mono">Created by Hari Bot & Business Solutions</span>
+            <span className="text-[11px] text-slate-500 font-mono">Created by Hari Bot & Business Solutions</span>
             <button
               onClick={() => {
                 setIsMoreMenuOpen(false);
@@ -95,7 +116,7 @@ export const BottomNav: React.FC = () => {
       )}
 
       {/* Main Bottom Bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/90 py-1.5 px-3 flex items-center justify-around lg:hidden shadow-2xl">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/90 py-1.5 px-2 flex items-center justify-around lg:hidden shadow-2xl safe-area-bottom">
         <button
           onClick={() => setActiveTab('command')}
           className={`flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition ${
@@ -103,7 +124,7 @@ export const BottomNav: React.FC = () => {
           }`}
         >
           <LayoutDashboard className="w-5 h-5" />
-          <span className="text-[10px]">HOME</span>
+          <span className="text-[10px] font-mono font-bold">{t('home')}</span>
         </button>
 
         <button
@@ -113,18 +134,19 @@ export const BottomNav: React.FC = () => {
           }`}
         >
           <FolderKanban className="w-5 h-5" />
-          <span className="text-[10px]">CASES</span>
+          <span className="text-[10px] font-mono font-bold">{t('cases')}</span>
         </button>
 
-        {/* Prominent Center Capture Button */}
+        {/* Prominent Center Capture Button (Direct Camera Trigger) */}
         <button
           onClick={openCamera}
           className="flex flex-col items-center justify-center -mt-5"
+          title="Capture Evidence Instantly"
         >
           <div className="w-14 h-14 rounded-full bg-blue-600 border-4 border-slate-950 flex items-center justify-center text-white shadow-xl shadow-blue-900/60 active:scale-95 transition">
             <Camera className="w-6 h-6 animate-pulse" />
           </div>
-          <span className="text-[10px] font-extrabold text-blue-400 mt-0.5">CAPTURE</span>
+          <span className="text-[10px] font-mono font-black text-blue-400 mt-0.5">{t('capture')}</span>
         </button>
 
         <button
@@ -134,7 +156,7 @@ export const BottomNav: React.FC = () => {
           }`}
         >
           <HardDrive className="w-5 h-5" />
-          <span className="text-[10px]">EVIDENCE</span>
+          <span className="text-[10px] font-mono font-bold">{t('evidence')}</span>
         </button>
 
         <button
@@ -144,7 +166,7 @@ export const BottomNav: React.FC = () => {
           }`}
         >
           <Bot className="w-5 h-5" />
-          <span className="text-[10px]">AI</span>
+          <span className="text-[10px] font-mono font-bold">{t('ai')}</span>
         </button>
 
         <button
@@ -152,7 +174,7 @@ export const BottomNav: React.FC = () => {
           className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-slate-400"
         >
           <Menu className="w-5 h-5" />
-          <span className="text-[10px]">MORE</span>
+          <span className="text-[10px] font-mono font-bold">{t('more')}</span>
         </button>
       </nav>
     </>

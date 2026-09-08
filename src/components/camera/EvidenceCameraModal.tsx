@@ -263,7 +263,7 @@ export const EvidenceCameraModal: React.FC = () => {
   const handleFinalConfirm = (data: { title: string; description: string; notes: string; tags: string[] }) => {
     if (!capturedMediaUrl) return;
 
-    const evdId = `EVD-${new Date().getFullYear()}-001-${Math.floor(100 + Math.random() * 900)}`;
+    const evdId = `EVD-IN-${new Date().getFullYear()}-015-${Math.floor(100 + Math.random() * 900)}`;
     const category = getCategoryFromMode();
 
     const newEvd: Evidence = {
@@ -279,8 +279,8 @@ export const EvidenceCameraModal: React.FC = () => {
       hash: Array.from(new Array(64), () => Math.floor(Math.random() * 16).toString(16)).join(''),
       status: 'NEEDS_REVIEW',
       level: 1,
-      capturedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      deviceTime: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      capturedAt: new Date().toLocaleDateString() + ' • ' + new Date().toLocaleTimeString() + ' IST',
+      deviceTime: new Date().toLocaleDateString() + ' • ' + new Date().toLocaleTimeString() + ' IST',
       resolution: '1920x1080 FHD',
       fileSize: '2.4 MB',
       qualityMetrics,

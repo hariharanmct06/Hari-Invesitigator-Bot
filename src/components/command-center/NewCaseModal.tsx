@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { Case, CasePriority } from '../../types/investigation';
-import { X, Check, FolderPlus, ArrowRight, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { Case, CasePriority, IndianAddress } from '../../types/investigation';
+import { X, Check, FolderPlus, ArrowRight, ArrowLeft, ShieldAlert, MapPin } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -9,24 +9,33 @@ interface Props {
 }
 
 export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { addCase } = useInvestigation();
+  const { addCase, t } = useInvestigation();
 
   const [step, setStep] = useState<number>(1);
   const [title, setTitle] = useState('');
   const [caseNumber, setCaseNumber] = useState(`CASE #${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
   const [priority, setPriority] = useState<CasePriority>('HIGH');
-  const [leadInvestigator, setLeadInvestigator] = useState('Inspector M. Vance');
-  const [incidentDate, setIncidentDate] = useState(new Date().toISOString().substring(0, 10));
-  const [location, setLocation] = useState('');
+  const [leadInvestigator, setLeadInvestigator] = useState('Inspector K. Sundaram');
+  const [incidentDate, setIncidentDate] = useState(new Date().toLocaleDateString() + ' • IST');
+  
+  // Indian Address Fields
+  const [stateName, setStateName] = useState('Tamil Nadu');
+  const [district, setDistrict] = useState('Coimbatore');
+  const [city, setCity] = useState('Coimbatore');
+  const [locality, setLocality] = useState('Saibaba Colony');
+  const [street, setStreet] = useState('104 Mettupalayam Road');
+  const [pinCode, setPinCode] = useState('641011');
+  const [phone, setPhone] = useState('+91 98765 43210');
+
   const [description, setDescription] = useState('');
   const [initialTag, setInitialTag] = useState('');
-  const [tags, setTags] = useState<string[]>(['Field Investigation', 'High Priority']);
+  const [tags, setTags] = useState<string[]>(['India Investigation', 'Tamil Nadu']);
 
   if (!isOpen) return null;
 
   const handleNext = () => {
     if (step === 1 && !title.trim()) return;
-    if (step === 2 && (!location.trim() || !description.trim())) return;
+    if (step === 2 && (!locality.trim() || !description.trim())) return;
     setStep(s => s + 1);
   };
 
@@ -36,19 +45,32 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const addressObj: IndianAddress = {
+      country: 'India',
+      state: stateName,
+      district,
+      city,
+      locality,
+      street,
+      pinCode
+    };
+
+    const locationStr = `${locality}, ${city}, ${stateName} (${pinCode})`;
+
     const newC: Case = {
       id: `case-${Date.now()}`,
       caseNumber,
       title,
       description,
       incidentDate,
-      location,
+      location: locationStr,
+      address: addressObj,
       priority,
       status: 'ACTIVE',
       leadInvestigator,
       tags,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+      createdAt: new Date().toLocaleDateString() + ' • IST',
+      updatedAt: new Date().toLocaleDateString() + ' • IST'
     };
     addCase(newC);
     onClose();
@@ -67,12 +89,12 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
         {/* Header & Step Indicator */}
         <div className="mb-6 space-y-3">
           <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold">
-            <FolderPlus className="w-4 h-4" /> NEW INVESTIGATION INTAKE WIZARD
+            <FolderPlus className="w-4 h-4" /> INDIA CASE INTAKE WIZARD
           </div>
           <h2 className="text-lg font-extrabold text-white">
             {step === 1 && 'STEP 01 — CASE INFORMATION'}
-            {step === 2 && 'STEP 02 — INCIDENT CONTEXT'}
-            {step === 3 && 'STEP 03 — INITIAL EVIDENCE & TAGS'}
+            {step === 2 && 'STEP 02 — INDIAN LOCATION & INCIDENT'}
+            {step === 3 && 'STEP 03 — EVIDENCE CLASSIFICATION TAGS'}
             {step === 4 && 'STEP 04 — REVIEW & LAUNCH WORKSPACE'}
           </h2>
 
@@ -109,7 +131,7 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="e.g. Sector 4 Warehouse Incident"
+                  placeholder="e.g. Coimbatore Warehouse Incident"
                   required
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 />
@@ -141,31 +163,78 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">INVESTIGATOR MOBILE (+91)</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  required
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
             </div>
           )}
 
           {step === 2 && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">INCIDENT DATE</label>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">STATE</label>
                   <input
-                    type="date"
-                    value={incidentDate}
-                    onChange={e => setIncidentDate(e.target.value)}
+                    type="text"
+                    value={stateName}
+                    onChange={e => setStateName(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">LOCATION / VENUE</label>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">DISTRICT</label>
                   <input
                     type="text"
-                    value={location}
-                    onChange={e => setLocation(e.target.value)}
-                    placeholder="e.g. Loading Dock B, Building 4"
+                    value={district}
+                    onChange={e => setDistrict(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">CITY / AREA</label>
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={e => setCity(e.target.value)}
+                    required
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">LOCALITY / STREET</label>
+                  <input
+                    type="text"
+                    value={locality}
+                    onChange={e => setLocality(e.target.value)}
+                    placeholder="e.g. Saibaba Colony"
+                    required
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">PIN CODE (6 DIGITS)</label>
+                  <input
+                    type="text"
+                    value={pinCode}
+                    onChange={e => setPinCode(e.target.value)}
+                    placeholder="641011"
+                    maxLength={6}
+                    required
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white"
                   />
                 </div>
               </div>
@@ -175,8 +244,8 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  rows={4}
-                  placeholder="Thorough description of incident background, suspected breach, or reporting facts..."
+                  rows={3}
+                  placeholder="Detailed description of incident context..."
                   required
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
@@ -188,14 +257,14 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="p-4 bg-slate-950 border border-dashed border-slate-800 rounded-2xl text-center space-y-2">
                 <ShieldAlert className="w-8 h-8 text-blue-400 mx-auto" />
-                <h4 className="text-xs font-semibold text-slate-200">Initial Evidence Workspace Ready</h4>
+                <h4 className="text-xs font-semibold text-slate-200">Evidence Vault Ready</h4>
                 <p className="text-[11px] text-slate-400">
-                  You can capture evidence using the camera tool immediately after launching the workspace.
+                  Evidence IDs will follow format <code className="text-blue-400 font-mono">EVD-IN-2026-015-XXX</code>.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">INITIAL CLASSIFICATION TAGS</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">TAGS</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -239,12 +308,8 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <span className="font-bold text-white">{title}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Priority:</span>
-                <span className="font-bold text-amber-400">{priority}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
                 <span className="text-slate-400">Location:</span>
-                <span className="text-slate-200">{location}</span>
+                <span className="text-slate-200">{locality}, {city}, {stateName} ({pinCode})</span>
               </div>
               <div>
                 <span className="text-slate-400 block mb-1">Summary:</span>
@@ -280,7 +345,7 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 type="submit"
                 className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-emerald-900/40"
               >
-                <Check className="w-4 h-4" /> LAUNCH INVESTIGATION WORKSPACE
+                <Check className="w-4 h-4" /> LAUNCH CASE WORKSPACE
               </button>
             )}
           </div>

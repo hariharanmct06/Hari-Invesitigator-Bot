@@ -6,6 +6,8 @@ import { BottomNav } from './components/layout/BottomNav';
 import { AIPanelDrawer } from './components/layout/AIPanelDrawer';
 import { EvidenceCameraModal } from './components/camera/EvidenceCameraModal';
 import { CommandCenter } from './components/command-center/CommandCenter';
+import { MobileHomeScreen } from './components/mobile/MobileHomeScreen';
+import { EmergencyModal } from './components/mobile/EmergencyModal';
 import { NewCaseModal } from './components/command-center/NewCaseModal';
 import { EvidenceVault } from './components/evidence/EvidenceVault';
 import { ConnectionGraph } from './components/graph/ConnectionGraph';
@@ -17,7 +19,7 @@ import { EvidenceGapIntelligence } from './components/ai/EvidenceGapIntelligence
 import { ReportStudio } from './components/reports/ReportStudio';
 import { AuditLogView } from './components/security/AuditLogView';
 import { AboutModal } from './components/about/AboutModal';
-import { Bot, Sparkles } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 const MainContent: React.FC = () => {
   const { activeTab } = useInvestigation();
@@ -35,10 +37,18 @@ const MainContent: React.FC = () => {
         <Sidebar />
 
         {/* Dynamic Main Workspace Container */}
-        <main className="flex-1 p-4 md:p-6 mb-16 lg:mb-0 overflow-y-auto">
-          {(activeTab === 'command' || activeTab === 'cases') && (
-            <CommandCenter onOpenNewCase={() => setIsNewCaseOpen(true)} />
+        <main className="flex-1 p-3 md:p-6 mb-16 lg:mb-0 overflow-y-auto">
+          {/* Mobile Home View */}
+          {activeTab === 'command' && (
+            <>
+              <MobileHomeScreen onOpenNewCase={() => setIsNewCaseOpen(true)} />
+              <div className="hidden lg:block">
+                <CommandCenter onOpenNewCase={() => setIsNewCaseOpen(true)} />
+              </div>
+            </>
           )}
+
+          {activeTab === 'cases' && <CommandCenter onOpenNewCase={() => setIsNewCaseOpen(true)} />}
 
           {activeTab === 'evidence' && <EvidenceVault />}
 
@@ -63,17 +73,20 @@ const MainContent: React.FC = () => {
       {/* Mobile Bottom Navigation */}
       <BottomNav />
 
-      {/* Dedicated Camera Full-Screen Workspace Modal */}
+      {/* Full-Screen Camera Workspace Modal */}
       <EvidenceCameraModal />
+
+      {/* India Emergency Services Modal */}
+      <EmergencyModal />
 
       {/* Floating AI Assistant Trigger Button */}
       {!isAIPanelOpen && (
         <button
           onClick={() => setIsAIPanelOpen(true)}
-          className="fixed bottom-20 lg:bottom-6 right-6 z-40 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-xs shadow-2xl flex items-center gap-2 transition active:scale-95 shadow-blue-900/50"
+          className="fixed bottom-20 lg:bottom-6 right-5 z-40 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-xs shadow-2xl flex items-center gap-2 transition active:scale-95 shadow-blue-900/50"
         >
           <Bot className="w-5 h-5 animate-spin-slow" />
-          <span>HARI AI</span>
+          <span className="font-mono">HARI AI</span>
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
         </button>
       )}

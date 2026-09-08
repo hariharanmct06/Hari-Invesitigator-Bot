@@ -3,13 +3,25 @@ export type EvidenceLevel = 1 | 2 | 3 | 4 | 5;
 export type CasePriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 export type CaseStatus = 'ACTIVE' | 'PENDING' | 'CLOSED' | 'ARCHIVED';
 
+export interface IndianAddress {
+  country: string; // Default: 'India'
+  state: string; // e.g. 'Tamil Nadu'
+  district: string; // e.g. 'Coimbatore'
+  city: string; // e.g. 'Coimbatore'
+  locality: string; // e.g. 'Saibaba Colony'
+  street?: string;
+  building?: string;
+  pinCode: string; // e.g. '641011'
+}
+
 export interface Case {
   id: string;
   caseNumber: string; // e.g. "CASE #2026-001"
   title: string;
   description: string;
-  incidentDate: string;
+  incidentDate: string; // e.g. "08/09/2026 • 10:18 AM IST"
   location: string;
+  address?: IndianAddress;
   priority: CasePriority;
   status: CaseStatus;
   leadInvestigator: string;
@@ -38,7 +50,7 @@ export interface EvidenceNote {
 
 export interface Evidence {
   id: string;
-  evidenceId: string; // e.g. "EVD-2026-001-018"
+  evidenceId: string; // e.g. "EVD-IN-2026-015-024"
   caseId: string;
   title: string;
   description: string;
@@ -49,7 +61,7 @@ export interface Evidence {
   hash: string; // SHA-256 checksum
   status: EvidenceStatus;
   level: EvidenceLevel;
-  capturedAt: string;
+  capturedAt: string; // IST
   deviceTime: string;
   resolution?: string;
   fileSize?: string;
@@ -63,7 +75,7 @@ export interface Evidence {
 export interface AIInferenceItem {
   id: string;
   text: string;
-  confidence: number; // 0 - 100
+  confidence: number;
   evidenceId?: string;
   level: EvidenceLevel;
   reasoningBasis: string;
@@ -92,7 +104,7 @@ export interface Person {
   caseId: string;
   name: string;
   role: PersonRole;
-  phone?: string;
+  phone?: string; // +91 98765 43210
   email?: string;
   notes: string;
   photoUrl?: string;
@@ -112,7 +124,7 @@ export interface LocationItem {
 export interface InvestigationEvent {
   id: string;
   caseId: string;
-  timestamp: string;
+  timestamp: string; // IST
   title: string;
   description: string;
   locationName?: string;
