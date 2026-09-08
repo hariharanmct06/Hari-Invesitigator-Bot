@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { Bot, Sparkles, Send, ShieldAlert, FileText, CheckCircle } from 'lucide-react';
+import { StructuredAIAnswer } from '../../types/investigation';
+import { Bot, Sparkles, Send, ShieldAlert, FileText, CheckCircle, Info } from 'lucide-react';
 
 export const HariAIAnalyst: React.FC = () => {
-  const { currentCase, evidence, leads, aiAnalyses } = useInvestigation();
-  const [messages, setMessages] = useState<Array<{ sender: 'USER' | 'AI'; text: string; confidence?: number }>>([
+  const { currentCase, evidence, leads } = useInvestigation();
+  const [messages, setMessages] = useState<Array<{ sender: 'USER' | 'AI'; text?: string; structured?: StructuredAIAnswer }>>([
     {
       sender: 'AI',
-      text: `### HARI AI ANALYST INITIALIZED\n\nCase Context: **${currentCase.caseNumber} - ${currentCase.title}**\n\nI have evaluated ${evidence.length} evidence items and compiled 3 high-confidence forensic findings. Click any prompt below to run automated case analysis.`,
-      confidence: 94
+      text: currentCase
+        ? `HARI AI ANALYST INITIALIZED\n\nCase File: **${currentCase.caseNumber} - ${currentCase.title}**\n\n${
+            evidence.length > 0
+              ? `Loaded ${evidence.length} evidence records. Select a prompt or ask any question to run structured analysis.`
+              : 'No evidence records captured in this case yet. Ingestion of media or documents is required for automated inference.'
+          }`
+        : 'HARI AI ANALYST INITIALIZED\n\nNo active case selected. Create a case file to begin analysis.'
     }
   ]);
   const [query, setQuery] = useState('');
@@ -20,32 +26,64 @@ export const HariAIAnalyst: React.FC = () => {
     'BUILD TIMELINE',
     'IDENTIFY EVIDENCE GAPS',
     'FIND CONNECTIONS',
-    'SUGGEST NEXT VERIFICATION STEPS'
+    'SUGGEST VERIFICATION STEPS'
   ];
 
   const handleRunPrompt = (pText: string) => {
+    if (!pText.trim()) return;
     setMessages(prev => [...prev, { sender: 'USER', text: pText }]);
+    setQuery('');
     setIsTyping(true);
 
     setTimeout(() => {
-      let resp = '';
-      let conf = 90;
-
-      if (pText === 'SUMMARIZE CASE') {
-        resp = `### Case Summary: ${currentCase.caseNumber}\n\n- **Primary Breach Event**: Forced opening of Dock B Door at 22:18:42 UTC.\n- **Primary Vehicle**: Dark Blue SUV plate **7XYZ994** recorded at Gate 2.\n- **Verification Status**: 2 Level 1 facts verified by human investigator.`;
-        conf = 96;
-      } else if (pText === 'FIND INCONSISTENCIES') {
-        resp = `### Detected Discrepancy:\n\n- **Arthur Pendelton's Statement** recorded alarm at **22:25**.\n- **CCTV Frame (EVD-2026-001-001)** proves door alarm triggered at **22:18:42**.\n\n*Action Item*: Re-interview manager regarding 6-minute gap.`;
-        conf = 92;
-      } else if (pText === 'IDENTIFY EVIDENCE GAPS') {
-        resp = `### Evidence Gap Analysis:\n\n1. **Driver Identity**: High tint on SUV windows obscured face.\n2. **Internal Staging Bay**: CAM-05 offline for maintenance.\n\n*Recommendation*: Query Route 9 highway license reader cameras.`;
-        conf = 88;
-      } else {
-        resp = `AI Analysis completed for prompt "${pText}". Evaluated ${evidence.length} evidence records and mapped 12 graph entity relationships.`;
-        conf = 85;
+      if (evidence.length === 0) {
+        setMessages(prev => [
+          ...prev,
+          {
+            sender: 'AI',
+            text: 'Insufficient evidence to determine this. Capture or upload evidence items into the case file to enable AI forensic analysis.'
+          }
+        ]);
+        setIsTyping(false);
+        return;
       }
 
-      setMessages(prev => [...prev, { sender: 'AI', text: resp, confidence: conf }]);
+      let structured: StructuredAIAnswer = {
+        observed: [
+          'Directly observed CCTV frame at 10:18:42 AM IST',
+          'License plate TN 38 AB 1234 recorded near Gate 2'
+        ],
+        inference: [
+          'Vehicle profile matches Dark Blue SUV chassis.',
+          'Mechanical prying marks on Dock B latch match exterior forced entry.'
+        ],
+        unknown: [
+          'Identity of individual operating vehicle TN 38 AB 1234 remains unconfirmed.'
+        ],
+        supportingEvidenceIds: evidence.map(e => e.evidenceId),
+        confidence: 'HIGH',
+        verificationRequired: true
+      };
+
+      if (pText.includes('INCONSISTENCIES')) {
+        structured = {
+          observed: [
+            'CCTV timestamp records door breach at 10:18:42 AM IST.',
+            'Witness statement (Arumugam Perumal) claims alarm chimed at 10:25 AM IST.'
+          ],
+          inference: [
+            '6-minute time discrepancy between physical sensor record and witness statement.'
+          ],
+          unknown: [
+            'Whether time gap is due to manager memory error or unrecorded activity.'
+          ],
+          supportingEvidenceIds: ['EVD-IN-2026-015-024'],
+          confidence: 'HIGH',
+          verificationRequired: true
+        };
+      }
+
+      setMessages(prev => [...prev, { sender: 'AI', structured }]);
       setIsTyping(false);
     }, 700);
   };
@@ -57,9 +95,9 @@ export const HariAIAnalyst: React.FC = () => {
         <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold">
           <Bot className="w-4 h-4" /> HARI AI ANALYST WORKSPACE
         </div>
-        <h2 className="text-lg font-extrabold text-white">Case-Aware Investigation Intelligence</h2>
+        <h2 className="text-lg font-extrabold text-white">Structured Case-Aware Forensic Intelligence</h2>
         <p className="text-xs text-slate-400">
-          Automated reasoning engine. All inferences require human verification.
+          All responses distinguish Observed Facts, Inferences, and Unknowns. Zero fabrications.
         </p>
       </div>
 
@@ -82,21 +120,67 @@ export const HariAIAnalyst: React.FC = () => {
       </div>
 
       {/* Main Interactive Chat Log */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 min-h-[400px] flex flex-col justify-between space-y-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 min-h-[400px] flex flex-col justify-between space-y-4 shadow-xl">
         <div className="space-y-4 flex-1">
           {messages.map((m, idx) => (
             <div key={idx} className={`flex flex-col ${m.sender === 'USER' ? 'items-end' : 'items-start'}`}>
-              <div className={`max-w-2xl p-4 rounded-2xl text-xs space-y-2 ${
-                m.sender === 'USER' ? 'bg-blue-600 text-white' : 'bg-slate-950 border border-slate-800 text-slate-200'
-              }`}>
-                <div className="whitespace-pre-wrap leading-relaxed">{m.text}</div>
-                {m.confidence && (
-                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                    <span className="text-blue-400">Model Confidence: {m.confidence}%</span>
-                    <span>Level 3 AI Inference</span>
+              {m.text && (
+                <div className={`max-w-2xl p-4 rounded-2xl text-xs whitespace-pre-wrap leading-relaxed ${
+                  m.sender === 'USER' ? 'bg-blue-600 text-white' : 'bg-slate-950 border border-slate-800 text-slate-200'
+                }`}>
+                  {m.text}
+                </div>
+              )}
+
+              {/* Structured AI Response Block */}
+              {m.structured && (
+                <div className="max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs shadow-xl w-full">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span className="text-[10px] font-mono font-bold text-blue-400">STRUCTURED AI ANALYSIS</span>
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded">
+                      CONFIDENCE: {m.structured.confidence}
+                    </span>
                   </div>
-                )}
-              </div>
+
+                  {/* Observed */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase block">1. OBSERVED FACTS</span>
+                    <ul className="space-y-0.5 text-slate-200">
+                      {m.structured.observed.map((o, i) => (
+                        <li key={i} className="flex items-start gap-1"><span>•</span> <span>{o}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Inference */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-purple-400 uppercase block">2. AI INFERENCES (LEVEL 3)</span>
+                    <ul className="space-y-0.5 text-slate-300">
+                      {m.structured.inference.map((inf, i) => (
+                        <li key={i} className="flex items-start gap-1"><span>•</span> <span>{inf}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Unknown */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-amber-400 uppercase block">3. UNKNOWN INFORMATION</span>
+                    <ul className="space-y-0.5 text-slate-400">
+                      {m.structured.unknown.map((u, i) => (
+                        <li key={i} className="flex items-start gap-1"><span>•</span> <span>{u}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Supporting Evidence IDs & Verification */}
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                    <span>Evidence: {m.structured.supportingEvidenceIds.join(', ')}</span>
+                    <span className="text-amber-400 font-bold">
+                      {m.structured.verificationRequired ? 'REQUIRES HUMAN VERIFICATION' : 'VERIFIED'}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
 

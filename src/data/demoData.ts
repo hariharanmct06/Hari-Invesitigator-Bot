@@ -24,8 +24,9 @@ export const DEMO_MEDIA = {
 
 export const DEMO_CASE: Case = {
   id: 'case-2026-001',
-  caseNumber: 'CASE #2026-001',
+  caseNumber: 'CASE-IN-2026-0001',
   title: 'Coimbatore Warehouse Incident',
+  caseType: 'General Investigation',
   description: 'Fictional investigation into unauthorized access, breach of Dock B door, and consignment displacement at Sector 4 Logistics Hub, Saibaba Colony, Coimbatore.',
   incidentDate: '08/09/2026 • 10:18 AM IST',
   location: 'Saibaba Colony, Coimbatore, Tamil Nadu (641011)',
@@ -42,6 +43,26 @@ export const DEMO_CASE: Case = {
   priority: 'CRITICAL',
   status: 'ACTIVE',
   leadInvestigator: 'Inspector K. Sundaram',
+  investigatorPhone: '+91 98422 10982',
+  knownInformation: [
+    'Forced door alarm triggered at 10:18 AM IST',
+    'Dark Blue SUV TN 38 AB 1234 recorded near Gate 2'
+  ],
+  unknownInformation: [
+    'Identity of driver operating vehicle TN 38 AB 1234'
+  ],
+  openQuestions: [
+    'Re-interview manager regarding 6-minute discrepancy between CAM-04 timestamp and testimony.'
+  ],
+  progressStages: [
+    { name: 'CASE SETUP', status: 'COMPLETED' },
+    { name: 'EVIDENCE COLLECTION', status: 'IN_PROGRESS' },
+    { name: 'EVIDENCE REVIEW', status: 'IN_PROGRESS' },
+    { name: 'TIMELINE CONSTRUCTION', status: 'IN_PROGRESS' },
+    { name: 'CONNECTION ANALYSIS', status: 'IN_PROGRESS' },
+    { name: 'VERIFICATION', status: 'IN_PROGRESS' },
+    { name: 'REPORTING', status: 'NOT_STARTED' }
+  ],
   tags: ['Coimbatore', 'Tamil Nadu', 'Warehouse Breach', 'Consignment', 'Discrepancy'],
   createdAt: '08/09/2026 • 10:30 AM IST',
   updatedAt: '08/09/2026 • 11:15 AM IST',
@@ -50,7 +71,7 @@ export const DEMO_CASE: Case = {
 export const DEMO_EVIDENCE: Evidence[] = [
   {
     id: 'evd-001',
-    evidenceId: 'EVD-IN-2026-015-024',
+    evidenceId: 'EVD-IN-2026-000001',
     caseId: 'case-2026-001',
     title: 'CCTV Camera 04 Dock B Frame',
     description: 'Frame capture showing dark SUV positioned near Dock Door B during alarm trigger at Coimbatore facility.',
@@ -59,7 +80,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
     originalUrl: DEMO_MEDIA.cctv,
     processedUrl: DEMO_MEDIA.cctv,
     hash: 'a8f5d72e9c13b48201a4e6f98c251d7e3401b2c4d5e6f7a8b9c0d1e2f3a4b5c6',
-    status: 'VERIFIED',
+    status: 'HUMAN_VERIFIED',
     level: 1,
     capturedAt: '08/09/2026 • 10:18 AM IST',
     deviceTime: '08/09/2026 • 10:18 AM IST',
@@ -86,7 +107,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
   },
   {
     id: 'evd-002',
-    evidenceId: 'EVD-IN-2026-015-025',
+    evidenceId: 'EVD-IN-2026-000002',
     caseId: 'case-2026-001',
     title: 'Vehicle Reconnaissance Photo (TN 38 AB 1234)',
     description: 'Close-up capture of dark blue SUV license plate TN 38 AB 1234 recorded near perimeter fence in Saibaba Colony.',
@@ -95,7 +116,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
     originalUrl: DEMO_MEDIA.vehicle,
     processedUrl: DEMO_MEDIA.vehicle,
     hash: 'b7e4c3d2a1098f7e6d5c4b3a210987654321fedcba9876543210abcdef123456',
-    status: 'VERIFIED',
+    status: 'HUMAN_VERIFIED',
     level: 1,
     capturedAt: '08/09/2026 • 10:10 AM IST',
     deviceTime: '08/09/2026 • 10:10 AM IST',
@@ -122,7 +143,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
   },
   {
     id: 'evd-003',
-    evidenceId: 'EVD-IN-2026-015-026',
+    evidenceId: 'EVD-IN-2026-000003',
     caseId: 'case-2026-001',
     title: 'Dock B Breach Scene Photo',
     description: 'Direct evidence photo showing broken security tamper seal on Consignment #C-409 inside Loading Dock B.',
@@ -131,7 +152,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
     originalUrl: DEMO_MEDIA.scene,
     processedUrl: DEMO_MEDIA.scene,
     hash: 'c1d2e3f4a5b6c7d8e9f0123456789abcdef0123456789abcdef0123456789abc',
-    status: 'VERIFIED',
+    status: 'HUMAN_VERIFIED',
     level: 1,
     capturedAt: '08/09/2026 • 10:50 AM IST',
     deviceTime: '08/09/2026 • 10:50 AM IST',
@@ -151,7 +172,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
   },
   {
     id: 'evd-004',
-    evidenceId: 'EVD-IN-2026-015-027',
+    evidenceId: 'EVD-IN-2026-000004',
     caseId: 'case-2026-001',
     title: 'Coimbatore Gate Logsheet Document Scan',
     description: 'Scanned security log sheet documenting gate check-ins at Saibaba Colony logistics hub.',
@@ -160,7 +181,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
     originalUrl: DEMO_MEDIA.document,
     processedUrl: DEMO_MEDIA.document,
     hash: 'd9e8f7a6b5c4d3e2f109876543210fe9876543210fedcba98765432101234567',
-    status: 'VERIFIED',
+    status: 'HUMAN_VERIFIED',
     level: 2,
     capturedAt: '08/09/2026 • 11:15 AM IST',
     deviceTime: '08/09/2026 • 11:15 AM IST',
@@ -180,7 +201,7 @@ export const DEMO_EVIDENCE: Evidence[] = [
   },
   {
     id: 'evd-005',
-    evidenceId: 'EVD-IN-2026-015-028',
+    evidenceId: 'EVD-IN-2026-000005',
     caseId: 'case-2026-001',
     title: 'Security Control Call Recording Audio',
     description: 'Dispatch audio recording from security control room reporting forced door alarm.',
@@ -228,7 +249,7 @@ export const DEMO_AI_ANALYSIS: Record<string, AIAnalysis> = {
         id: 'inf-01',
         text: 'Vehicle profile matches a Dark Blue Commercial SUV (Reg: TN 38 series).',
         confidence: 88,
-        evidenceId: 'EVD-IN-2026-015-024',
+        evidenceId: 'EVD-IN-2026-000001',
         level: 3,
         reasoningBasis: 'Visual feature extraction matches domestic SUV chassis database.',
         verificationStatus: 'REQUIRES_VERIFICATION'
@@ -237,7 +258,7 @@ export const DEMO_AI_ANALYSIS: Record<string, AIAnalysis> = {
         id: 'inf-02',
         text: 'The dock door was opened from exterior using mechanical leverage.',
         confidence: 76,
-        evidenceId: 'EVD-IN-2026-015-024',
+        evidenceId: 'EVD-IN-2026-000001',
         level: 3,
         reasoningBasis: 'Stress bending on lower panel latch matches exterior pry tool application.',
         verificationStatus: 'REQUIRES_VERIFICATION'
@@ -268,7 +289,7 @@ export const DEMO_AI_ANALYSIS: Record<string, AIAnalysis> = {
         id: 'inf-03',
         text: 'License Plate TN 38 AB 1234 is registered under RTO Coimbatore North (TN-38).',
         confidence: 94,
-        evidenceId: 'EVD-IN-2026-015-025',
+        evidenceId: 'EVD-IN-2026-000002',
         level: 2,
         reasoningBasis: 'Direct OCR text query against mock vehicle registry.',
         verificationStatus: 'HUMAN_VERIFIED'
@@ -412,14 +433,14 @@ export const DEMO_STATEMENTS: Statement[] = [
     comparisons: [
       {
         id: 'comp-01',
-        evidenceId: 'EVD-IN-2026-015-024',
+        evidenceId: 'EVD-IN-2026-000001',
         evidenceTitle: 'CCTV Camera 04 Dock B Frame',
         status: 'DISCREPANCY',
         detail: 'Witness claimed alarm occurred at 10:25 AM IST, but CCTV timestamp proves alarm triggered precisely at 10:18:42 AM IST.'
       },
       {
         id: 'comp-02',
-        evidenceId: 'EVD-IN-2026-015-027',
+        evidenceId: 'EVD-IN-2026-000004',
         evidenceTitle: 'Security Gate Logsheet',
         status: 'SUPPORTED',
         detail: 'Confirms doors were scheduled for lockdown at 10:00 AM IST.'
@@ -443,14 +464,14 @@ export const DEMO_STATEMENTS: Statement[] = [
     comparisons: [
       {
         id: 'comp-03',
-        evidenceId: 'EVD-IN-2026-015-025',
+        evidenceId: 'EVD-IN-2026-000002',
         evidenceTitle: 'Vehicle Reconnaissance Photo',
         status: 'SUPPORTED',
         detail: 'Photo EXIF timestamp confirms 10:10:15 AM IST capture time.'
       },
       {
         id: 'comp-04',
-        evidenceId: 'EVD-IN-2026-015-028',
+        evidenceId: 'EVD-IN-2026-000005',
         evidenceTitle: 'Security Control Call Recording Audio',
         status: 'SUPPORTED',
         detail: 'Call recording audio timestamp matches call at 10:20:12 AM IST.'
@@ -460,11 +481,11 @@ export const DEMO_STATEMENTS: Statement[] = [
 ];
 
 export const DEMO_GRAPH_NODES: GraphNode[] = [
-  { id: 'node-case', label: 'CASE #2026-001', type: 'EVENT', subtitle: 'Coimbatore Warehouse Incident', x: 400, y: 220 },
-  { id: 'node-evd1', label: 'EVD-IN-024 (CCTV)', type: 'EVIDENCE', subtitle: 'Camera 04 Frame', x: 250, y: 120 },
-  { id: 'node-evd2', label: 'EVD-IN-025 (SUV Photo)', type: 'EVIDENCE', subtitle: 'TN 38 AB 1234', x: 550, y: 120 },
-  { id: 'node-evd3', label: 'EVD-IN-026 (Scene)', type: 'EVIDENCE', subtitle: 'Tamper Seal C-409', x: 180, y: 320 },
-  { id: 'node-evd4', label: 'EVD-IN-027 (Logsheet)', type: 'EVIDENCE', subtitle: 'Gate 2 Security Log', x: 620, y: 320 },
+  { id: 'node-case', label: 'CASE-IN-2026-0001', type: 'EVENT', subtitle: 'Coimbatore Warehouse Incident', x: 400, y: 220 },
+  { id: 'node-evd1', label: 'EVD-IN-000001', type: 'EVIDENCE', subtitle: 'Camera 04 Frame', x: 250, y: 120 },
+  { id: 'node-evd2', label: 'EVD-IN-000002', type: 'EVIDENCE', subtitle: 'TN 38 AB 1234', x: 550, y: 120 },
+  { id: 'node-evd3', label: 'EVD-IN-000003', type: 'EVIDENCE', subtitle: 'Tamper Seal C-409', x: 180, y: 320 },
+  { id: 'node-evd4', label: 'EVD-IN-000004', type: 'EVIDENCE', subtitle: 'Gate 2 Security Log', x: 620, y: 320 },
   { id: 'node-p1', label: 'Insp. K. Sundaram', type: 'PERSON', subtitle: 'Lead Investigator', x: 400, y: 60 },
   { id: 'node-p2', label: 'Arumugam Perumal', type: 'PERSON', subtitle: 'Manager (Witness)', x: 120, y: 200 },
   { id: 'node-p3', label: 'Priyadarshini Rajan', type: 'PERSON', subtitle: 'Guard (Reporting)', x: 680, y: 200 },
@@ -475,14 +496,14 @@ export const DEMO_GRAPH_NODES: GraphNode[] = [
 ];
 
 export const DEMO_GRAPH_EDGES: GraphEdge[] = [
-  { id: 'e1', source: 'node-evd1', target: 'node-loc1', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-024' },
-  { id: 'e2', source: 'node-evd2', target: 'node-veh', relationship: 'Appears in', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-025' },
+  { id: 'e1', source: 'node-evd1', target: 'node-loc1', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000001' },
+  { id: 'e2', source: 'node-evd2', target: 'node-veh', relationship: 'Appears in', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000002' },
   { id: 'e3', source: 'node-veh', target: 'node-p4', relationship: 'Associated with', status: 'SUSPECTED' },
   { id: 'e4', source: 'node-p2', target: 'node-evd1', relationship: 'Potentially conflicts with', status: 'DISCREPANT' },
-  { id: 'e5', source: 'node-p3', target: 'node-evd2', relationship: 'Supports', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-025' },
-  { id: 'e6', source: 'node-veh', target: 'node-loc1', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-024' },
-  { id: 'e7', source: 'node-evd3', target: 'node-loc1', relationship: 'Appears in', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-026' },
-  { id: 'e8', source: 'node-evd4', target: 'node-loc2', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-015-027' }
+  { id: 'e5', source: 'node-p3', target: 'node-evd2', relationship: 'Supports', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000002' },
+  { id: 'e6', source: 'node-veh', target: 'node-loc1', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000001' },
+  { id: 'e7', source: 'node-evd3', target: 'node-loc1', relationship: 'Appears in', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000003' },
+  { id: 'e8', source: 'node-evd4', target: 'node-loc2', relationship: 'Located at', status: 'CONFIRMED', supportingEvidenceId: 'EVD-IN-2026-000004' }
 ];
 
 export const DEMO_LEADS: Lead[] = [
@@ -490,7 +511,7 @@ export const DEMO_LEADS: Lead[] = [
     id: 'lead-001',
     caseId: 'case-2026-001',
     title: 'Trace Owner Registration for Vehicle TN 38 AB 1234',
-    reason: 'Vehicle photo EVD-IN-2026-015-025 identifies license plate TN 38 AB 1234 registered in Coimbatore North (TN-38).',
+    reason: 'Vehicle photo EVD-IN-2026-000002 identifies license plate TN 38 AB 1234 registered in Coimbatore North (TN-38).',
     priority: 'CRITICAL',
     status: 'NEW',
     supportingEvidenceIds: ['evd-002'],
@@ -514,7 +535,7 @@ export const DEMO_LEADS: Lead[] = [
     id: 'lead-003',
     caseId: 'case-2026-001',
     title: 'Audit Consignment #C-409 Inventory in Saibaba Colony Bay',
-    reason: 'Scene photo EVD-IN-2026-015-026 shows broken security seal on consignment crate.',
+    reason: 'Scene photo EVD-IN-2026-000003 shows broken security seal on consignment crate.',
     priority: 'HIGH',
     status: 'VERIFIED',
     supportingEvidenceIds: ['evd-003'],
@@ -554,7 +575,7 @@ export const DEMO_AUDIT_LOGS: AuditLog[] = [
     timestamp: '08/09/2026 • 10:30 AM IST',
     user: 'Insp. K. Sundaram',
     action: 'CREATE_CASE',
-    object: 'CASE #2026-001',
+    object: 'CASE-IN-2026-0001',
     details: 'Initiated investigation workspace for Coimbatore Warehouse Incident.'
   },
   {
@@ -563,7 +584,7 @@ export const DEMO_AUDIT_LOGS: AuditLog[] = [
     timestamp: '08/09/2026 • 10:32 AM IST',
     user: 'Insp. K. Sundaram',
     action: 'INGEST_EVIDENCE',
-    object: 'EVD-IN-2026-015-024',
+    object: 'EVD-IN-2026-000001',
     details: 'Uploaded CCTV Camera 04 frame capture. Computed SHA-256 hash.'
   },
   {
@@ -572,7 +593,7 @@ export const DEMO_AUDIT_LOGS: AuditLog[] = [
     timestamp: '08/09/2026 • 10:35 AM IST',
     user: 'Hari AI System',
     action: 'AI_ANALYSIS_COMPLETED',
-    object: 'EVD-IN-2026-015-024',
+    object: 'EVD-IN-2026-000001',
     details: 'Extracted scene objects, vehicle profile, and door breach mechanics. Assigned 86% confidence.'
   },
   {
@@ -581,7 +602,7 @@ export const DEMO_AUDIT_LOGS: AuditLog[] = [
     timestamp: '08/09/2026 • 11:20 AM IST',
     user: 'Insp. K. Sundaram',
     action: 'VERIFY_EVIDENCE',
-    object: 'EVD-IN-2026-015-025',
+    object: 'EVD-IN-2026-000002',
     details: 'Human verified vehicle reconnaissance photo and plate TN 38 AB 1234.'
   }
 ];

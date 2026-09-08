@@ -269,7 +269,7 @@ export const EvidenceCameraModal: React.FC = () => {
     const newEvd: Evidence = {
       id: `evd-captured-${Date.now()}`,
       evidenceId: evdId,
-      caseId: currentCase.id,
+      caseId: currentCase?.id || 'unassigned-case',
       title: data.title,
       description: data.description || 'Captured via Hari Investigator Evidence Camera.',
       category,

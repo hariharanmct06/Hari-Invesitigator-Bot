@@ -1,6 +1,6 @@
 import React from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { ShieldCheck, Lock, HardDrive, RotateCcw } from 'lucide-react';
+import { ShieldCheck, RotateCcw } from 'lucide-react';
 
 export const AuditLogView: React.FC = () => {
   const { auditLogs, resetDemoData, currentCase } = useInvestigation();
@@ -14,7 +14,7 @@ export const AuditLogView: React.FC = () => {
             <ShieldCheck className="w-5 h-5 text-emerald-400" /> SECURITY & AUDIT TRAIL
           </h2>
           <p className="text-xs text-slate-400">
-            Immutable append-only cryptographic event log for {currentCase.caseNumber}.
+            Immutable append-only cryptographic event log for {currentCase ? currentCase.caseNumber : 'Workspace'}.
           </p>
         </div>
 
@@ -22,7 +22,7 @@ export const AuditLogView: React.FC = () => {
           onClick={resetDemoData}
           className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition"
         >
-          <RotateCcw className="w-3.5 h-3.5" /> RESET DEMO DATA
+          <RotateCcw className="w-3.5 h-3.5" /> RESET WORKSPACE DATA
         </button>
       </div>
 

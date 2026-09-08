@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { Lead, LeadPriority, LeadStatus } from '../../types/investigation';
-import { Compass, Plus, CheckCircle, Clock, ShieldAlert, ArrowUpRight } from 'lucide-react';
+import { Compass, Plus } from 'lucide-react';
 
 export const LeadManager: React.FC = () => {
   const { leads, addLead, updateLeadStatus, currentCase } = useInvestigation();
@@ -14,6 +14,7 @@ export const LeadManager: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentCase) return;
     const newL: Lead = {
       id: `lead-${Date.now()}`,
       caseId: currentCase.id,
@@ -24,7 +25,7 @@ export const LeadManager: React.FC = () => {
       supportingEvidenceIds: [],
       confidence: 85,
       verificationAction: action,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+      createdAt: new Date().toLocaleDateString() + ' • IST'
     };
     addLead(newL);
     setShowModal(false);
@@ -129,42 +130,61 @@ export const LeadManager: React.FC = () => {
         </div>
       )}
 
-      {/* Leads Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {leads.map(l => (
-          <div key={l.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-xl">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
-                  l.priority === 'CRITICAL' ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-amber-950 text-amber-400 border border-amber-800'
-                }`}>
-                  {l.priority} PRIORITY
-                </span>
+      {/* Empty State */}
+      {leads.length === 0 && (
+        <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
+          <Compass className="w-10 h-10 text-slate-600 mx-auto" />
+          <h3 className="text-sm font-bold text-slate-300">NO LEADS LOGGED YET</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Log investigation leads to prioritize follow-up verification actions.
+          </p>
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl"
+          >
+            + CREATE FIRST LEAD
+          </button>
+        </div>
+      )}
 
-                <select
-                  value={l.status}
-                  onChange={e => updateLeadStatus(l.id, e.target.value as LeadStatus)}
-                  className="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-2 py-1 font-semibold"
-                >
-                  <option value="NEW">Status: NEW</option>
-                  <option value="REVIEWING">Status: REVIEWING</option>
-                  <option value="VERIFIED">Status: VERIFIED</option>
-                  <option value="DISMISSED">Status: DISMISSED</option>
-                  <option value="COMPLETED">Status: COMPLETED</option>
-                </select>
+      {/* Leads Grid */}
+      {leads.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {leads.map(l => (
+            <div key={l.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-xl">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                    l.priority === 'CRITICAL' ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-amber-950 text-amber-400 border border-amber-800'
+                  }`}>
+                    {l.priority} PRIORITY
+                  </span>
+
+                  <select
+                    value={l.status}
+                    onChange={e => updateLeadStatus(l.id, e.target.value as LeadStatus)}
+                    className="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-2 py-1 font-semibold"
+                  >
+                    <option value="NEW">Status: NEW</option>
+                    <option value="REVIEWING">Status: REVIEWING</option>
+                    <option value="VERIFIED">Status: VERIFIED</option>
+                    <option value="DISMISSED">Status: DISMISSED</option>
+                    <option value="COMPLETED">Status: COMPLETED</option>
+                  </select>
+                </div>
+
+                <h4 className="text-sm font-bold text-white">{l.title}</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">{l.reason}</p>
               </div>
 
-              <h4 className="text-sm font-bold text-white">{l.title}</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">{l.reason}</p>
+              <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-1 text-xs">
+                <span className="text-[10px] font-mono text-blue-400 font-bold block">VERIFICATION ACTION:</span>
+                <p className="text-slate-200">{l.verificationAction}</p>
+              </div>
             </div>
-
-            <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-1 text-xs">
-              <span className="text-[10px] font-mono text-blue-400 font-bold block">VERIFICATION ACTION:</span>
-              <p className="text-slate-200">{l.verificationAction}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

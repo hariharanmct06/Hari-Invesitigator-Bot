@@ -56,7 +56,7 @@ export const MediaAnalysisView: React.FC<Props> = ({ evidence, analysis, onClose
         </div>
 
         <div className="flex items-center gap-2">
-          {evidence.status !== 'VERIFIED' ? (
+          {evidence.status !== 'HUMAN_VERIFIED' ? (
             <button
               onClick={() => verifyEvidence(evidence.id)}
               className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-emerald-900/40"

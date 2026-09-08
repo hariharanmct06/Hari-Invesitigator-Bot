@@ -13,7 +13,7 @@ export const EvidenceGapIntelligence: React.FC = () => {
           <AlertTriangle className="w-5 h-5 text-amber-400" /> EVIDENCE GAP INTELLIGENCE
         </h2>
         <p className="text-xs text-slate-400">
-          Structured breakdown of Known Facts vs Unknown Context for {currentCase.caseNumber}.
+          Structured breakdown of Known Facts vs Unknown Context for {currentCase?.caseNumber || 'Current Investigation'}.
         </p>
       </div>
 

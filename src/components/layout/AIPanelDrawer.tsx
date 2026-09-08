@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { Bot, Send, Sparkles, X, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
+import { Bot, Send, Sparkles, X } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -14,7 +14,9 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Array<{ sender: 'USER' | 'AI'; text: string; confidence?: number; evidenceRef?: string }>>([
     {
       sender: 'AI',
-      text: `Hello Inspector. I am **Hari AI Analyst**, fully initialized with context for **${currentCase.caseNumber}: ${currentCase.title}**.\n\nI have analyzed ${evidence.length} evidence items and identified ${leads.length} active investigation leads. How can I assist your investigation?`
+      text: currentCase
+        ? `Hello Inspector. I am **Hari AI Analyst**, initialized with context for **${currentCase.caseNumber}: ${currentCase.title}**.\n\nI have evaluated ${evidence.length} evidence items and identified ${leads.length} active investigation leads. How can I assist your investigation?`
+        : 'Hello Inspector. I am **Hari AI Analyst**. Create or select a case to begin case-aware evidence analysis.'
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
@@ -37,22 +39,34 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
     setIsTyping(true);
 
     setTimeout(() => {
+      if (!currentCase || evidence.length === 0) {
+        setMessages(prev => [
+          ...prev,
+          {
+            sender: 'AI',
+            text: 'Insufficient evidence to determine this. Capture or upload evidence items into the case file to enable AI forensic analysis.'
+          }
+        ]);
+        setIsTyping(false);
+        return;
+      }
+
       let aiResponseText = '';
       let confidence = 88;
-      let evidenceRef = 'EVD-2026-001-001';
+      let evidenceRef = 'EVD-IN-2026-000001';
 
       if (query.includes('SUMMARIZE')) {
-        aiResponseText = `### Case Summary: ${currentCase.caseNumber}\n\n- **Incident Date**: 2026-09-07 22:18 UTC\n- **Primary Breach**: Forced access at Dock B Door, Sector 4 Logistics Hub.\n- **Primary Vehicle**: Dark Blue SUV, License 7XYZ994 recorded near Gate 2.\n- **Status**: 2 Verified evidence items, 1 statement discrepancy detected.`;
+        aiResponseText = `### Case Summary: ${currentCase.caseNumber}\n\n- **Incident Date**: ${currentCase.incidentDate}\n- **Primary Breach**: Forced access at Dock B Door.\n- **Primary Vehicle**: Dark Blue SUV TN 38 AB 1234.\n- **Status**: ${evidence.length} evidence items, ${leads.length} active leads.`;
         confidence = 94;
       } else if (query.includes('INCONSISTENCIES')) {
-        aiResponseText = `### Detected Discrepancy:\n\n- **Witness Statement (Arthur Pendelton)** claims dock door alarm chimed at **22:25**.\n- **CCTV Evidence (EVD-2026-001-001)** proves door alarm triggered at **22:18:42**.\n\n*Recommendation*: Re-interview manager regarding 6-minute discrepancy.`;
+        aiResponseText = `### Detected Discrepancy:\n\n- **Witness Statement (Arumugam Perumal)** claims alarm chimed at **10:25 AM IST**.\n- **CCTV Evidence (EVD-IN-2026-000001)** proves door alarm triggered at **10:18:42 AM IST**.\n\n*Recommendation*: Re-interview manager regarding 6-minute discrepancy.`;
         confidence = 91;
-        evidenceRef = 'EVD-2026-001-001';
+        evidenceRef = 'EVD-IN-2026-000001';
       } else if (query.includes('GAPS')) {
-        aiResponseText = `### Evidence Gap Analysis:\n\n1. **Driver Identity**: High tint on SUV windows prevented facial identification in CCTV.\n2. **Staging Bay Interior**: CAM-05 was offline for maintenance during incident.\n\n*Suggested Action*: Query adjacent Route 9 highway license readers.`;
+        aiResponseText = `### Evidence Gap Analysis:\n\n1. **Driver Identity**: High tint on SUV windows prevented facial identification in CCTV.\n2. **Staging Bay Interior**: CAM-05 was offline for maintenance.\n\n*Suggested Action*: Query adjacent highway license readers.`;
         confidence = 85;
       } else {
-        aiResponseText = `Based on current evidence for **${currentCase.caseNumber}**, vehicle **7XYZ994** is connected to Dock Door B breach at 22:18:42. Level 3 AI inference suggests exterior mechanical prying on door latch.`;
+        aiResponseText = `Based on current evidence for **${currentCase.caseNumber}**, vehicle **TN 38 AB 1234** is connected to Dock Door B breach at 10:18:42 AM IST. Level 3 AI inference suggests exterior mechanical prying on door latch.`;
         confidence = 86;
       }
 
@@ -66,7 +80,7 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
         }
       ]);
       setIsTyping(false);
-    }, 800);
+    }, 700);
   };
 
   if (!isOpen) return null;
@@ -97,7 +111,7 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
 
       {/* Case Context Pill */}
       <div className="px-4 py-2 bg-slate-900/40 border-b border-slate-800/60 flex items-center justify-between text-xs font-mono text-slate-400">
-        <span className="truncate">Context: {currentCase.caseNumber}</span>
+        <span className="truncate">Context: {currentCase ? currentCase.caseNumber : 'None'}</span>
         <span className="text-emerald-400 font-semibold flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" /> Live
         </span>

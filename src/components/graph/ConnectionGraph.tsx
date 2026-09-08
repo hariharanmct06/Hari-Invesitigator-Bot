@@ -65,7 +65,7 @@ export const ConnectionGraph: React.FC = () => {
             <GitFork className="w-5 h-5 text-blue-400" /> CONNECTION INTELLIGENCE GRAPH
           </h2>
           <p className="text-xs text-slate-400">
-            Interactive entity relationship mapping for {currentCase.caseNumber}. Neutral entity stance.
+            Interactive entity relationship mapping for {currentCase ? currentCase.caseNumber : 'Investigation Workspace'}. Neutral entity stance.
           </p>
         </div>
 

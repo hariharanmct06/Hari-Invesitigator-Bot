@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { FileCheck, Printer, Download, Shield, Check, Sparkles } from 'lucide-react';
+import { FileCheck, Printer, Download, Shield } from 'lucide-react';
 
 export const ReportStudio: React.FC = () => {
-  const { currentCase, evidence, events, statements, leads, gaps, auditLogs } = useInvestigation();
+  const { currentCase, evidence, events, leads } = useInvestigation();
 
   const [includeAI, setIncludeAI] = useState(true);
   const [includeTimeline, setIncludeTimeline] = useState(true);
   const [includeStatements, setIncludeStatements] = useState(true);
   const [includeAudit, setIncludeAudit] = useState(true);
+
+  if (!currentCase) {
+    return (
+      <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
+        <FileCheck className="w-10 h-10 text-slate-600 mx-auto" />
+        <h3 className="text-sm font-bold text-slate-300">NO CASE SELECTED</h3>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          Create or select a case to build executive forensic reports.
+        </p>
+      </div>
+    );
+  }
 
   const handlePrint = () => {
     window.print();

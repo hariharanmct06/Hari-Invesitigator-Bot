@@ -6,13 +6,9 @@ import {
   HardDrive,
   Grid,
   List,
-  Filter,
   CheckCircle,
-  Clock,
-  Sparkles,
-  Camera,
   Search,
-  Tag,
+  Sparkles,
   ShieldCheck,
   AlertCircle
 } from 'lucide-react';
@@ -30,7 +26,7 @@ export const EvidenceVault: React.FC = () => {
     if (filter === 'VIDEOS' && e.category !== 'VIDEO') return false;
     if (filter === 'AUDIO' && e.category !== 'AUDIO') return false;
     if (filter === 'DOCUMENTS' && e.category !== 'DOCUMENT') return false;
-    if (filter === 'VERIFIED' && e.status !== 'VERIFIED') return false;
+    if (filter === 'VERIFIED' && e.status !== 'HUMAN_VERIFIED') return false;
     if (filter === 'NEEDS_REVIEW' && e.status !== 'NEEDS_REVIEW') return false;
 
     if (searchQuery.trim()) {
@@ -120,9 +116,9 @@ export const EvidenceVault: React.FC = () => {
       {filteredEvidence.length === 0 && (
         <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
           <HardDrive className="w-10 h-10 text-slate-600 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-300">NO EVIDENCE FOUND</h3>
+          <h3 className="text-sm font-bold text-slate-300">NO EVIDENCE RECORDED YET</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            No evidence matches the selected filter. Capture new evidence using the camera tool.
+            This case file does not contain any evidence matching the selected filter.
           </p>
           <button
             onClick={openCamera}
@@ -163,7 +159,7 @@ export const EvidenceVault: React.FC = () => {
                 </div>
 
                 <div className="absolute top-3 right-3">
-                  {e.status === 'VERIFIED' ? (
+                  {e.status === 'HUMAN_VERIFIED' ? (
                     <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-800 text-[10px] font-bold flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3" /> VERIFIED
                     </span>
@@ -185,7 +181,7 @@ export const EvidenceVault: React.FC = () => {
                 </p>
 
                 <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-500">
-                  <span>Captured: {e.capturedAt.substring(11, 19)}</span>
+                  <span>Captured: {e.capturedAt}</span>
                   <span className="text-blue-400 font-semibold flex items-center gap-1">
                     <Sparkles className="w-3 h-3" /> AI Analysis Ready
                   </span>
@@ -218,7 +214,7 @@ export const EvidenceVault: React.FC = () => {
 
               <div className="flex items-center gap-4 text-xs">
                 <span className="font-mono text-slate-500 hidden md:inline">{e.capturedAt}</span>
-                {e.status === 'VERIFIED' ? (
+                {e.status === 'HUMAN_VERIFIED' ? (
                   <span className="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold text-[10px]">
                     VERIFIED
                   </span>

@@ -5,7 +5,9 @@ import { Sidebar } from './components/layout/Sidebar';
 import { BottomNav } from './components/layout/BottomNav';
 import { AIPanelDrawer } from './components/layout/AIPanelDrawer';
 import { EvidenceCameraModal } from './components/camera/EvidenceCameraModal';
-import { CommandCenter } from './components/command-center/CommandCenter';
+import { WelcomeOnboarding } from './components/onboarding/WelcomeOnboarding';
+import { EmptyWorkspace } from './components/command-center/EmptyWorkspace';
+import { InvestigationDesk } from './components/case-desk/InvestigationDesk';
 import { MobileHomeScreen } from './components/mobile/MobileHomeScreen';
 import { EmergencyModal } from './components/mobile/EmergencyModal';
 import { NewCaseModal } from './components/command-center/NewCaseModal';
@@ -22,9 +24,11 @@ import { AboutModal } from './components/about/AboutModal';
 import { Bot } from 'lucide-react';
 
 const MainContent: React.FC = () => {
-  const { activeTab } = useInvestigation();
+  const { cases, activeTab, isDemoMode } = useInvestigation();
   const [isNewCaseOpen, setIsNewCaseOpen] = useState(false);
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+
+  const hasCases = cases.length > 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-200">
@@ -38,35 +42,38 @@ const MainContent: React.FC = () => {
 
         {/* Dynamic Main Workspace Container */}
         <main className="flex-1 p-3 md:p-6 mb-16 lg:mb-0 overflow-y-auto">
-          {/* Mobile Home View */}
-          {activeTab === 'command' && (
+          {!hasCases && !isDemoMode ? (
+            <WelcomeOnboarding onOpenNewCase={() => setIsNewCaseOpen(true)} />
+          ) : (
             <>
-              <MobileHomeScreen onOpenNewCase={() => setIsNewCaseOpen(true)} />
-              <div className="hidden lg:block">
-                <CommandCenter onOpenNewCase={() => setIsNewCaseOpen(true)} />
-              </div>
+              {(activeTab === 'command' || activeTab === 'cases') && (
+                <>
+                  <MobileHomeScreen onOpenNewCase={() => setIsNewCaseOpen(true)} />
+                  <div className="hidden lg:block">
+                    <InvestigationDesk onOpenNewCase={() => setIsNewCaseOpen(true)} />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'evidence' && <EvidenceVault />}
+
+              {activeTab === 'graph' && <ConnectionGraph />}
+
+              {activeTab === 'timeline' && <InvestigationTimeline />}
+
+              {activeTab === 'statements' && <StatementIntelligence />}
+
+              {activeTab === 'ai' && <HariAIAnalyst />}
+
+              {activeTab === 'leads' && <LeadManager />}
+
+              {activeTab === 'gaps' && <EvidenceGapIntelligence />}
+
+              {activeTab === 'reports' && <ReportStudio />}
+
+              {activeTab === 'security' && <AuditLogView />}
             </>
           )}
-
-          {activeTab === 'cases' && <CommandCenter onOpenNewCase={() => setIsNewCaseOpen(true)} />}
-
-          {activeTab === 'evidence' && <EvidenceVault />}
-
-          {activeTab === 'graph' && <ConnectionGraph />}
-
-          {activeTab === 'timeline' && <InvestigationTimeline />}
-
-          {activeTab === 'statements' && <StatementIntelligence />}
-
-          {activeTab === 'ai' && <HariAIAnalyst />}
-
-          {activeTab === 'leads' && <LeadManager />}
-
-          {activeTab === 'gaps' && <EvidenceGapIntelligence />}
-
-          {activeTab === 'reports' && <ReportStudio />}
-
-          {activeTab === 'security' && <AuditLogView />}
         </main>
       </div>
 

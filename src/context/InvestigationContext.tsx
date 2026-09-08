@@ -41,12 +41,16 @@ interface InvestigationContextType {
   setDataSaver: (active: boolean) => void;
   toggleDataSaver: () => void;
   
+  isDemoMode: boolean;
+  enterDemoMode: () => void;
+  exitDemoMode: () => void;
+
   activeTab: string;
   setActiveTab: (tab: string) => void;
   
   cases: Case[];
-  currentCase: Case;
-  setCurrentCase: (c: Case) => void;
+  currentCase: Case | null;
+  setCurrentCase: (c: Case | null) => void;
   addCase: (c: Case) => void;
   
   evidence: Evidence[];
@@ -58,11 +62,16 @@ interface InvestigationContextType {
   aiAnalyses: Record<string, AIAnalysis>;
   
   people: Person[];
+  addPerson: (p: Person) => void;
+
   locations: LocationItem[];
+  addLocation: (loc: LocationItem) => void;
+
   events: InvestigationEvent[];
   addEvent: (evt: InvestigationEvent) => void;
   
   statements: Statement[];
+  addStatement: (stmt: Statement) => void;
   
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -107,6 +116,10 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [dataSaver, setDataSaverState] = useState<boolean>(() => {
     return localStorage.getItem('hari_data_saver') === 'true';
   });
+
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true';
+  });
   
   const [activeTab, setActiveTab] = useState<string>('command');
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
@@ -114,37 +127,69 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
   
+  // Cases state (GENUINELY EMPTY DEFAULT FOR REAL WORKSPACE)
   const [cases, setCases] = useState<Case[]>(() => {
-    const saved = localStorage.getItem('hari_cases');
-    return saved ? JSON.parse(saved) : [DEMO_CASE];
+    if (localStorage.getItem('hari_demo_mode') === 'true') return [DEMO_CASE];
+    const saved = localStorage.getItem('hari_real_cases');
+    return saved ? JSON.parse(saved) : [];
   });
   
-  const [currentCase, setCurrentCase] = useState<Case>(cases[0] || DEMO_CASE);
+  const [currentCase, setCurrentCase] = useState<Case | null>(cases[0] || null);
   
+  // Evidence state (GENUINELY EMPTY DEFAULT)
   const [evidence, setEvidence] = useState<Evidence[]>(() => {
-    const saved = localStorage.getItem('hari_evidence');
-    return saved ? JSON.parse(saved) : DEMO_EVIDENCE;
+    if (localStorage.getItem('hari_demo_mode') === 'true') return DEMO_EVIDENCE;
+    const saved = localStorage.getItem('hari_real_evidence');
+    return saved ? JSON.parse(saved) : [];
   });
   
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
   
   const [aiAnalyses, setAiAnalyses] = useState<Record<string, AIAnalysis>>(() => {
-    const saved = localStorage.getItem('hari_analyses');
-    return saved ? JSON.parse(saved) : DEMO_AI_ANALYSIS;
+    if (localStorage.getItem('hari_demo_mode') === 'true') return DEMO_AI_ANALYSIS;
+    const saved = localStorage.getItem('hari_real_analyses');
+    return saved ? JSON.parse(saved) : {};
   });
   
-  const [people, setPeople] = useState<Person[]>(DEMO_PEOPLE);
-  const [locations, setLocations] = useState<LocationItem[]>(DEMO_LOCATIONS);
-  const [events, setEvents] = useState<InvestigationEvent[]>(DEMO_EVENTS);
-  const [statements, setStatements] = useState<Statement[]>(DEMO_STATEMENTS);
-  const [nodes, setNodes] = useState<GraphNode[]>(DEMO_GRAPH_NODES);
-  const [edges, setEdges] = useState<GraphEdge[]>(DEMO_GRAPH_EDGES);
-  const [leads, setLeads] = useState<Lead[]>(DEMO_LEADS);
-  const [gaps, setGaps] = useState<EvidenceGap[]>(DEMO_GAPS);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(DEMO_AUDIT_LOGS);
+  const [people, setPeople] = useState<Person[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_PEOPLE : [];
+  });
+
+  const [locations, setLocations] = useState<LocationItem[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_LOCATIONS : [];
+  });
+
+  const [events, setEvents] = useState<InvestigationEvent[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_EVENTS : [];
+  });
+
+  const [statements, setStatements] = useState<Statement[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_STATEMENTS : [];
+  });
+
+  const [nodes, setNodes] = useState<GraphNode[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_GRAPH_NODES : [];
+  });
+
+  const [edges, setEdges] = useState<GraphEdge[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_GRAPH_EDGES : [];
+  });
+
+  const [leads, setLeads] = useState<Lead[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_LEADS : [];
+  });
+
+  const [gaps, setGaps] = useState<EvidenceGap[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_GAPS : [];
+  });
+
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => {
+    return localStorage.getItem('hari_demo_mode') === 'true' ? DEMO_AUDIT_LOGS : [];
+  });
+
   const [offlineQueue, setOfflineQueue] = useState<OfflineQueueItem[]>([]);
 
-  // Apply theme class to root element
+  // Apply theme
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'light') {
@@ -166,6 +211,70 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // Save real state to localStorage when not in Demo mode
+  useEffect(() => {
+    if (!isDemoMode) {
+      localStorage.setItem('hari_real_cases', JSON.stringify(cases));
+    }
+  }, [cases, isDemoMode]);
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      localStorage.setItem('hari_real_evidence', JSON.stringify(evidence));
+    }
+  }, [evidence, isDemoMode]);
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      localStorage.setItem('hari_real_analyses', JSON.stringify(aiAnalyses));
+    }
+  }, [aiAnalyses, isDemoMode]);
+
+  const enterDemoMode = () => {
+    setIsDemoMode(true);
+    localStorage.setItem('hari_demo_mode', 'true');
+    setCases([DEMO_CASE]);
+    setCurrentCase(DEMO_CASE);
+    setEvidence(DEMO_EVIDENCE);
+    setAiAnalyses(DEMO_AI_ANALYSIS);
+    setPeople(DEMO_PEOPLE);
+    setLocations(DEMO_LOCATIONS);
+    setEvents(DEMO_EVENTS);
+    setStatements(DEMO_STATEMENTS);
+    setNodes(DEMO_GRAPH_NODES);
+    setEdges(DEMO_GRAPH_EDGES);
+    setLeads(DEMO_LEADS);
+    setGaps(DEMO_GAPS);
+    setAuditLogs(DEMO_AUDIT_LOGS);
+    setActiveTab('command');
+  };
+
+  const exitDemoMode = () => {
+    setIsDemoMode(false);
+    localStorage.setItem('hari_demo_mode', 'false');
+    const savedCases = localStorage.getItem('hari_real_cases');
+    const realCases: Case[] = savedCases ? JSON.parse(savedCases) : [];
+    setCases(realCases);
+    setCurrentCase(realCases[0] || null);
+
+    const savedEvd = localStorage.getItem('hari_real_evidence');
+    setEvidence(savedEvd ? JSON.parse(savedEvd) : []);
+
+    const savedAna = localStorage.getItem('hari_real_analyses');
+    setAiAnalyses(savedAna ? JSON.parse(savedAna) : {});
+
+    setPeople([]);
+    setLocations([]);
+    setEvents([]);
+    setStatements([]);
+    setNodes([]);
+    setEdges([]);
+    setLeads([]);
+    setGaps([]);
+    setAuditLogs([]);
+    setActiveTab('command');
+  };
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -193,7 +302,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const addCase = (c: Case) => {
     setCases(prev => [c, ...prev]);
     setCurrentCase(c);
-    addAuditLog('CREATE_CASE', c.caseNumber, `Created new case ${c.title}`);
+    addAuditLog('CREATE_CASE', c.caseNumber, `Created case ${c.title}`);
   };
 
   const addEvidence = (newE: Evidence, newAnalysis?: AIAnalysis) => {
@@ -214,32 +323,36 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     setNodes(prev => [...prev, newNode]);
 
     addAuditLog('INGEST_EVIDENCE', newE.evidenceId, `Ingested ${newE.category} evidence. Hash: ${newE.hash.substring(0, 12)}...`);
-
-    if (!navigator.onLine) {
-      const queueItem: OfflineQueueItem = {
-        id: `q-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        type: 'EVIDENCE_UPLOAD',
-        payload: newE,
-        status: 'QUEUED'
-      };
-      setOfflineQueue(prev => [...prev, queueItem]);
-    }
   };
 
   const verifyEvidence = (id: string) => {
     setEvidence(prev =>
-      prev.map(e => (e.id === id ? { ...e, status: 'VERIFIED' as const } : e))
+      prev.map(e => (e.id === id ? { ...e, status: 'HUMAN_VERIFIED' as const } : e))
     );
     const item = evidence.find(e => e.id === id);
     if (item) {
-      addAuditLog('VERIFY_EVIDENCE', item.evidenceId, 'Human Investigator verified evidence validity and provenance.');
+      addAuditLog('VERIFY_EVIDENCE', item.evidenceId, 'Human Investigator verified evidence validity.');
     }
+  };
+
+  const addPerson = (p: Person) => {
+    setPeople(prev => [...prev, p]);
+    addAuditLog('ADD_PERSON', p.name, `Added person (${p.role})`);
+  };
+
+  const addLocation = (loc: LocationItem) => {
+    setLocations(prev => [...prev, loc]);
+    addAuditLog('ADD_LOCATION', loc.name, `Added location record`);
   };
 
   const addEvent = (evt: InvestigationEvent) => {
     setEvents(prev => [...prev, evt]);
     addAuditLog('CREATE_EVENT', evt.title, `Added timeline event at ${evt.timestamp}`);
+  };
+
+  const addStatement = (stmt: Statement) => {
+    setStatements(prev => [...prev, stmt]);
+    addAuditLog('ADD_STATEMENT', stmt.personName, `Added statement testimony`);
   };
 
   const addNode = (node: GraphNode) => {
@@ -252,7 +365,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addLead = (lead: Lead) => {
     setLeads(prev => [lead, ...prev]);
-    addAuditLog('CREATE_LEAD', lead.title, `Generated investigation lead with ${lead.priority} priority`);
+    addAuditLog('CREATE_LEAD', lead.title, `Generated investigation lead`);
   };
 
   const updateLeadStatus = (id: string, status: Lead['status']) => {
@@ -261,11 +374,12 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const addAuditLog = (action: string, object: string, details: string) => {
+    if (!currentCase) return;
     const newLog: AuditLog = {
       id: `aud-${Date.now()}`,
       caseId: currentCase.id,
       timestamp: new Date().toLocaleDateString() + ' • ' + new Date().toLocaleTimeString() + ' IST',
-      user: 'Insp. K. Sundaram',
+      user: 'Investigator',
       action,
       object,
       details
@@ -280,20 +394,38 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const closeEmergencyModal = () => setIsEmergencyModalOpen(false);
 
   const resetDemoData = () => {
-    setCases([DEMO_CASE]);
-    setCurrentCase(DEMO_CASE);
-    setEvidence(DEMO_EVIDENCE);
-    setAiAnalyses(DEMO_AI_ANALYSIS);
-    setPeople(DEMO_PEOPLE);
-    setLocations(DEMO_LOCATIONS);
-    setEvents(DEMO_EVENTS);
-    setStatements(DEMO_STATEMENTS);
-    setNodes(DEMO_GRAPH_NODES);
-    setEdges(DEMO_GRAPH_EDGES);
-    setLeads(DEMO_LEADS);
-    setGaps(DEMO_GAPS);
-    setAuditLogs(DEMO_AUDIT_LOGS);
-    localStorage.clear();
+    if (isDemoMode) {
+      setCases([DEMO_CASE]);
+      setCurrentCase(DEMO_CASE);
+      setEvidence(DEMO_EVIDENCE);
+      setAiAnalyses(DEMO_AI_ANALYSIS);
+      setPeople(DEMO_PEOPLE);
+      setLocations(DEMO_LOCATIONS);
+      setEvents(DEMO_EVENTS);
+      setStatements(DEMO_STATEMENTS);
+      setNodes(DEMO_GRAPH_NODES);
+      setEdges(DEMO_GRAPH_EDGES);
+      setLeads(DEMO_LEADS);
+      setGaps(DEMO_GAPS);
+      setAuditLogs(DEMO_AUDIT_LOGS);
+    } else {
+      setCases([]);
+      setCurrentCase(null);
+      setEvidence([]);
+      setAiAnalyses({});
+      setPeople([]);
+      setLocations([]);
+      setEvents([]);
+      setStatements([]);
+      setNodes([]);
+      setEdges([]);
+      setLeads([]);
+      setGaps([]);
+      setAuditLogs([]);
+      localStorage.removeItem('hari_real_cases');
+      localStorage.removeItem('hari_real_evidence');
+      localStorage.removeItem('hari_real_analyses');
+    }
   };
 
   return (
@@ -307,6 +439,9 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         dataSaver,
         setDataSaver,
         toggleDataSaver,
+        isDemoMode,
+        enterDemoMode,
+        exitDemoMode,
         activeTab,
         setActiveTab,
         cases,
@@ -320,10 +455,13 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         verifyEvidence,
         aiAnalyses,
         people,
+        addPerson,
         locations,
+        addLocation,
         events,
         addEvent,
         statements,
+        addStatement,
         nodes,
         edges,
         addNode,

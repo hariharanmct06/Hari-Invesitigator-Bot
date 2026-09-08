@@ -3,6 +3,23 @@ export type EvidenceLevel = 1 | 2 | 3 | 4 | 5;
 export type CasePriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 export type CaseStatus = 'ACTIVE' | 'PENDING' | 'CLOSED' | 'ARCHIVED';
 
+export type CaseType =
+  | 'General Investigation'
+  | 'Missing Person'
+  | 'Fraud / Financial'
+  | 'Cyber Incident'
+  | 'Theft'
+  | 'Property Incident'
+  | 'Document Investigation'
+  | 'Corporate Investigation'
+  | 'Digital Evidence'
+  | 'Other';
+
+export interface ProgressStage {
+  name: string;
+  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'NEEDS_REVIEW' | 'COMPLETED';
+}
+
 export interface IndianAddress {
   country: string; // Default: 'India'
   state: string; // e.g. 'Tamil Nadu'
@@ -16,8 +33,9 @@ export interface IndianAddress {
 
 export interface Case {
   id: string;
-  caseNumber: string; // e.g. "CASE #2026-001"
+  caseNumber: string; // e.g. "CASE-IN-2026-0001"
   title: string;
+  caseType: CaseType;
   description: string;
   incidentDate: string; // e.g. "08/09/2026 • 10:18 AM IST"
   location: string;
@@ -25,13 +43,25 @@ export interface Case {
   priority: CasePriority;
   status: CaseStatus;
   leadInvestigator: string;
+  investigatorPhone?: string;
+  team?: string;
+  knownInformation: string[];
+  unknownInformation: string[];
+  openQuestions: string[];
+  progressStages: ProgressStage[];
   tags: string[];
   createdAt: string;
   updatedAt: string;
 }
 
 export type EvidenceCategory = 'IMAGE' | 'VIDEO' | 'AUDIO' | 'DOCUMENT' | 'CARD';
-export type EvidenceStatus = 'VERIFIED' | 'NEEDS_REVIEW' | 'UNVERIFIED' | 'DISMISSED';
+export type EvidenceStatus =
+  | 'NEW'
+  | 'PROCESSING'
+  | 'ANALYSIS_READY'
+  | 'NEEDS_REVIEW'
+  | 'HUMAN_VERIFIED'
+  | 'ARCHIVED';
 
 export interface QualityMetrics {
   lighting: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
@@ -50,7 +80,7 @@ export interface EvidenceNote {
 
 export interface Evidence {
   id: string;
-  evidenceId: string; // e.g. "EVD-IN-2026-015-024"
+  evidenceId: string; // e.g. "EVD-IN-2026-000001"
   caseId: string;
   title: string;
   description: string;
@@ -82,6 +112,15 @@ export interface AIInferenceItem {
   verificationStatus: 'HUMAN_VERIFIED' | 'REQUIRES_VERIFICATION' | 'UNVERIFIED';
 }
 
+export interface StructuredAIAnswer {
+  observed: string[];
+  inference: string[];
+  unknown: string[];
+  supportingEvidenceIds: string[];
+  confidence: 'LOW' | 'MEDIUM' | 'HIGH';
+  verificationRequired: boolean;
+}
+
 export interface AIAnalysis {
   id: string;
   evidenceId: string;
@@ -97,7 +136,7 @@ export interface AIAnalysis {
   modelName: string;
 }
 
-export type PersonRole = 'Witness' | 'Reporting Party' | 'Person of Interest' | 'Unknown Individual' | 'Other';
+export type PersonRole = 'Witness' | 'Reporting Party' | 'Person of Interest' | 'Unknown Individual' | 'Investigator' | 'Other';
 
 export interface Person {
   id: string;
