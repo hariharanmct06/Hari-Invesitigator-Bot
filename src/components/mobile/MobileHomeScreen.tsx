@@ -2,17 +2,17 @@ import React from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import {
   Camera,
-  FileText,
-  Upload,
-  Mic,
   FolderKanban,
   HardDrive,
   Bot,
-  MapPin,
-  Clock,
+  Plus,
   PhoneCall,
   Sparkles,
-  Plus
+  ShieldCheck,
+  Search,
+  ArrowRight,
+  Clock,
+  Compass
 } from 'lucide-react';
 
 interface Props {
@@ -22,19 +22,22 @@ interface Props {
 export const MobileHomeScreen: React.FC<Props> = ({ onOpenNewCase }) => {
   const {
     currentCase,
+    cases,
     evidence,
     openCamera,
     setActiveTab,
     openEmergencyModal,
+    enterDemoMode,
+    isDemoMode,
     t
   } = useInvestigation();
 
   return (
-    <div className="space-y-5 pb-16 lg:hidden">
-      {/* India 112 Emergency Quick Assistance Bar */}
-      <div className="bg-gradient-to-r from-red-950/80 via-slate-900 to-slate-900 border border-red-900/60 rounded-2xl p-3.5 flex items-center justify-between shadow-xl">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center border border-red-500/30">
+    <div className="space-y-4 pb-20 lg:hidden px-3">
+      {/* 112 Nationwide Emergency Quick Assistance Banner */}
+      <div className="bg-gradient-to-r from-red-950/90 via-slate-900 to-slate-950 border border-red-800/80 rounded-2xl p-3.5 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center border border-red-500/30 shrink-0">
             <PhoneCall className="w-4 h-4" />
           </div>
           <div>
@@ -45,175 +48,181 @@ export const MobileHomeScreen: React.FC<Props> = ({ onOpenNewCase }) => {
 
         <button
           onClick={openEmergencyModal}
-          className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs flex items-center gap-1 shadow-md shadow-red-900/40"
+          className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-md active:scale-95 transition min-h-[40px]"
         >
           {t('call112')}
         </button>
       </div>
 
-      {/* Quick Action Grid */}
+      {/* QUICK ACTIONS GRID (44px Minimum Touch Targets) */}
       <div className="space-y-2">
-        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block px-1">
+        <span className="text-[10px] font-mono font-extrabold text-amber-400 uppercase tracking-wider block px-1">
           QUICK ACTIONS
         </span>
         <div className="grid grid-cols-2 gap-2.5">
           <button
-            onClick={openCamera}
-            className="p-4 bg-gradient-to-br from-blue-900/60 to-slate-900 border border-blue-600/50 hover:border-blue-500 rounded-2xl text-left flex flex-col justify-between h-28 shadow-xl group active:scale-95 transition"
+            onClick={onOpenNewCase}
+            className="p-3.5 metallic-card rounded-2xl text-left flex items-center gap-3 transition tactile-btn min-h-[56px]"
           >
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-900/50">
-              <Camera className="w-5 h-5 animate-pulse" />
+            <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+              <Plus className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <h4 className="text-xs font-extrabold text-white group-hover:text-blue-300">{t('captureEvidence')}</h4>
-              <p className="text-[10px] text-blue-300 font-mono">Instant Camera</p>
+              <h4 className="text-xs font-extrabold text-white">New Case</h4>
+              <p className="text-[10px] text-slate-400">Launch Case File</p>
             </div>
           </button>
 
           <button
             onClick={openCamera}
-            className="p-4 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl text-left flex flex-col justify-between h-28 shadow-xl group active:scale-95 transition"
+            className="p-3.5 metallic-card rounded-2xl text-left flex items-center gap-3 transition tactile-btn min-h-[56px]"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center justify-center">
-              <FileText className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              <Camera className="w-5 h-5 text-amber-400 animate-pulse" />
             </div>
             <div>
-              <h4 className="text-xs font-extrabold text-white">{t('scanDocument')}</h4>
-              <p className="text-[10px] text-slate-400 font-mono">OCR Edge Detection</p>
+              <h4 className="text-xs font-extrabold text-white">Capture</h4>
+              <p className="text-[10px] text-slate-400">Media / Scanner</p>
             </div>
           </button>
 
           <button
-            onClick={openCamera}
-            className="p-4 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl text-left flex flex-col justify-between h-28 shadow-xl group active:scale-95 transition"
+            onClick={() => setActiveTab('ai')}
+            className="p-3.5 metallic-card rounded-2xl text-left flex items-center gap-3 transition tactile-btn min-h-[56px]"
           >
-            <div className="w-9 h-9 rounded-xl bg-purple-950 text-purple-400 border border-purple-800 flex items-center justify-center">
-              <Upload className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+              <Bot className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h4 className="text-xs font-extrabold text-white">{t('uploadEvidence')}</h4>
-              <p className="text-[10px] text-slate-400 font-mono">Gallery Import</p>
+              <h4 className="text-xs font-extrabold text-white">AI Intelligence</h4>
+              <p className="text-[10px] text-slate-400">Hari AI Analyst</p>
             </div>
           </button>
 
           <button
-            onClick={openCamera}
-            className="p-4 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl text-left flex flex-col justify-between h-28 shadow-xl group active:scale-95 transition"
+            onClick={() => setActiveTab('evidence')}
+            className="p-3.5 metallic-card rounded-2xl text-left flex items-center gap-3 transition tactile-btn min-h-[56px]"
           >
-            <div className="w-9 h-9 rounded-xl bg-amber-950 text-amber-400 border border-amber-800 flex items-center justify-center">
-              <Mic className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-slate-800 text-slate-300 border border-slate-700">
+              <HardDrive className="w-5 h-5 text-slate-300" />
             </div>
             <div>
-              <h4 className="text-xs font-extrabold text-white">{t('recordAudio')}</h4>
-              <p className="text-[10px] text-slate-400 font-mono">Dispatch Audio</p>
+              <h4 className="text-xs font-extrabold text-white">Evidence Vault</h4>
+              <p className="text-[10px] text-slate-400">Browse Items</p>
             </div>
           </button>
         </div>
       </div>
 
-      {/* Active Case Card */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-            ACTIVE CASE
+      {/* DASHBOARD CARD 1: ACTIVE CASE DASHBOARD */}
+      <div className="metallic-card rounded-2xl p-4 space-y-3 shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+          <div className="flex items-center gap-2">
+            <FolderKanban className="w-4 h-4 text-blue-400" />
+            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider">CASE FILES</h3>
+          </div>
+          <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md">
+            TOTAL: {cases.length}
           </span>
-          <button onClick={() => setActiveTab('cases')} className="text-xs font-semibold text-blue-400">
-            View All
-          </button>
         </div>
 
         {currentCase ? (
           <div
-            onClick={() => setActiveTab('evidence')}
-            className="bg-slate-900 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-4 space-y-3 cursor-pointer transition shadow-xl"
+            onClick={() => setActiveTab('cases')}
+            className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 space-y-2 cursor-pointer active:scale-98 transition"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-blue-400 bg-blue-950 border border-blue-800 px-2.5 py-0.5 rounded-md">
-                {currentCase.caseNumber}
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-800">
+              <span className="text-[10px] font-mono font-bold text-blue-400">{currentCase.caseNumber}</span>
+              <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-950 border border-amber-800 px-1.5 py-0.5 rounded">
                 {currentCase.priority}
               </span>
             </div>
-
-            <div>
-              <h3 className="text-sm font-extrabold text-white">{currentCase.title}</h3>
-              <p className="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">
-                {currentCase.description}
-              </p>
-            </div>
-
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                <span className="truncate max-w-[140px]">{currentCase.location}</span>
-              </span>
-              <span className="text-emerald-400 font-semibold font-mono text-[11px]">
-                {evidence.length} Evidence
+            <h4 className="text-xs font-extrabold text-white truncate">{currentCase.title}</h4>
+            <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1 border-t border-slate-900">
+              <span>{currentCase.incidentDate}</span>
+              <span className="text-blue-400 flex items-center gap-1 font-bold">
+                VIEW DESK <ArrowRight className="w-3 h-3" />
               </span>
             </div>
           </div>
         ) : (
-          <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl text-center space-y-2">
-            <p className="text-xs text-slate-400">No active case in workspace.</p>
-            <button
-              onClick={onOpenNewCase}
-              className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold"
-            >
-              + CREATE FIRST CASE
-            </button>
+          <div className="text-center py-4 space-y-2">
+            <p className="text-xs text-slate-400">No active cases in workspace.</p>
+            <div className="flex justify-center gap-2">
+              <button
+                onClick={onOpenNewCase}
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow min-h-[38px]"
+              >
+                + CREATE CASE
+              </button>
+              {!isDemoMode && (
+                <button
+                  onClick={enterDemoMode}
+                  className="px-4 py-2 bg-slate-900 border border-slate-800 text-amber-400 rounded-xl text-xs font-bold min-h-[38px]"
+                >
+                  EXPLORE DEMO
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Recent Evidence Horizontal Swipe Cards */}
-      {evidence.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-              RECENT EVIDENCE
-            </span>
-            <button onClick={() => setActiveTab('evidence')} className="text-xs font-semibold text-blue-400">
-              Vault
-            </button>
+      {/* DASHBOARD CARD 2: EVIDENCE VAULT SUMMARY */}
+      <div className="metallic-card rounded-2xl p-4 space-y-3 shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+          <div className="flex items-center gap-2">
+            <HardDrive className="w-4 h-4 text-amber-400" />
+            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider">EVIDENCE VAULT</h3>
           </div>
+          <span className="text-[10px] font-mono font-bold text-blue-400 bg-blue-950/80 border border-blue-800 px-2 py-0.5 rounded-md">
+            ITEMS: {evidence.length}
+          </span>
+        </div>
 
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {evidence.map(e => (
-              <div
-                key={e.id}
-                onClick={() => setActiveTab('evidence')}
-                className="w-44 shrink-0 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden cursor-pointer transition shadow-lg space-y-2 p-2.5"
-              >
-                <div className="h-24 bg-slate-950 rounded-xl overflow-hidden flex items-center justify-center relative">
-                  <img src={e.fileUrl} alt={e.title} className="w-full h-full object-cover" />
-                  <span className="absolute bottom-1 left-1 text-[9px] font-mono bg-slate-950/80 px-1.5 py-0.5 rounded text-blue-400">
-                    {e.evidenceId}
-                  </span>
+        {evidence.length > 0 ? (
+          <div className="space-y-2">
+            {evidence.slice(0, 2).map(e => (
+              <div key={e.id} className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                <div className="min-w-0 pr-2">
+                  <span className="text-[9px] font-mono text-blue-400 font-bold block">{e.evidenceId}</span>
+                  <h5 className="font-bold text-slate-200 truncate">{e.title}</h5>
                 </div>
-                <h4 className="text-[11px] font-bold text-white truncate">{e.title}</h4>
-                <span className="text-[10px] text-slate-400 font-mono block">{e.capturedAt.substring(0, 10)}</span>
+                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 shrink-0">
+                  {e.status}
+                </span>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="text-xs text-slate-400 text-center py-2">
+            No evidence records ingested. Tap <strong className="text-amber-400">CAPTURE</strong> below to record items.
+          </p>
+        )}
+      </div>
 
-      {/* AI Case Status Card */}
-      <div className="bg-gradient-to-r from-slate-900 to-blue-950/40 border border-slate-800 rounded-2xl p-4 space-y-2 shadow-xl">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-white flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-purple-400" /> HARI AI CASE STATUS
-          </span>
-          <span className="text-[10px] font-mono text-purple-400 font-bold bg-purple-950 border border-purple-800 px-2 py-0.5 rounded">
-            CASE AWARE
+      {/* DASHBOARD CARD 3: AI FORENSIC STATUS */}
+      <div className="metallic-card rounded-2xl p-4 space-y-3 shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+          <div className="flex items-center gap-2">
+            <Bot className="w-4 h-4 text-blue-400" />
+            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider">HARI AI INTELLIGENCE</h3>
+          </div>
+          <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> ONLINE
           </span>
         </div>
+
         <p className="text-xs text-slate-300 leading-relaxed">
-          {evidence.length > 0
-            ? `Analyzed ${evidence.length} evidence items. Tap Hari AI Analyst for structured reasoning.`
-            : 'Workspace currently empty. Ingest evidence items to generate automated AI observations.'}
+          Grounded case-aware intelligence distinguishes observed evidence facts from inferences with zero fabrication.
         </p>
+
+        <button
+          onClick={() => setActiveTab('ai')}
+          className="w-full py-2.5 bg-gradient-to-r from-blue-950 to-slate-900 border border-blue-600/50 hover:border-blue-500 rounded-xl font-extrabold text-xs text-blue-300 flex items-center justify-center gap-2 transition tactile-btn min-h-[44px]"
+        >
+          <Sparkles className="w-4 h-4 text-amber-400" /> LAUNCH HARI AI ANALYST
+        </button>
       </div>
     </div>
   );

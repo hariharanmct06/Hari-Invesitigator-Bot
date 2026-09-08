@@ -428,9 +428,9 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={handleBack}
-                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl flex items-center gap-1.5 transition"
+                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl flex items-center gap-1.5 transition tactile-btn min-h-[44px]"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> Back
+                <ArrowLeft className="w-4 h-4 text-slate-400" /> Back
               </button>
             ) : (
               <div />
@@ -440,14 +440,14 @@ export const NewCaseModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="py-2.5 px-5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-blue-900/40"
+                className="py-2.5 px-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-blue-900/50 tactile-btn min-h-[44px]"
               >
-                Next <ArrowRight className="w-3.5 h-3.5" />
+                Next <ArrowRight className="w-4 h-4 text-amber-300" />
               </button>
             ) : (
               <button
                 type="submit"
-                className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-emerald-900/40"
+                className="py-2.5 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 transition shadow-lg shadow-emerald-900/50 tactile-btn min-h-[44px]"
               >
                 <Check className="w-4 h-4" /> CREATE CASE
               </button>
