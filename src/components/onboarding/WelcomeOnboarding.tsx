@@ -13,8 +13,8 @@ export const WelcomeOnboarding: React.FC<Props> = ({ onOpenNewCase }) => {
     <div className="max-w-4xl mx-auto py-8 px-4 space-y-8 animate-in fade-in zoom-in-95 duration-200">
       {/* Welcome Card */}
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 text-center space-y-6 shadow-2xl relative overflow-hidden">
-        <div className="w-16 h-16 rounded-3xl bg-blue-600 flex items-center justify-center text-white mx-auto shadow-xl shadow-blue-900/50">
-          <Shield className="w-9 h-9" />
+        <div className="w-20 h-20 rounded-3xl overflow-hidden border border-blue-500/40 shadow-2xl shadow-blue-900/60 mx-auto bg-slate-950 p-1">
+          <img src="/logo.jpg" alt="Hari Investigator AI Logo" className="w-full h-full object-cover rounded-2xl" />
         </div>
 
         <div className="space-y-2 max-w-xl mx-auto">

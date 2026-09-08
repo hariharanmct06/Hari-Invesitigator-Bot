@@ -11,8 +11,8 @@ export const EmptyWorkspace: React.FC<Props> = ({ onOpenNewCase }) => {
 
   return (
     <div className="max-w-3xl mx-auto py-12 px-4 text-center space-y-6">
-      <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center mx-auto shadow-xl">
-        <FolderKanban className="w-8 h-8" />
+      <div className="w-16 h-16 rounded-2xl overflow-hidden border border-blue-500/40 shadow-xl shadow-blue-900/50 mx-auto bg-slate-950 p-0.5">
+        <img src="/logo.jpg" alt="Hari Investigator AI Logo" className="w-full h-full object-cover rounded-xl" />
       </div>
 
       <div className="space-y-2">

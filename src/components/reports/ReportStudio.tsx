@@ -110,8 +110,8 @@ Created by Hari Bot & Business Solutions
         {/* Document Header */}
         <div className="border-b border-slate-800 pb-6 flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-6 h-6 text-blue-500" />
+            <div className="flex items-center gap-3">
+              <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-blue-500/40 shrink-0" />
               <h1 className="text-xl font-black tracking-tight text-white print:text-black">
                 HARI INVESTIGATOR AI
               </h1>

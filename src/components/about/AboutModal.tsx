@@ -18,9 +18,9 @@ export const AboutModal: React.FC = () => {
         </button>
 
         {/* Brand Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-900/50">
-            <Shield className="w-7 h-7" />
+        <div className="flex items-center gap-3.5 mb-4">
+          <div className="w-14 h-14 rounded-2xl overflow-hidden border border-blue-500/40 shadow-xl shadow-blue-900/50 bg-slate-950 p-0.5 shrink-0">
+            <img src="/logo.jpg" alt="Hari Investigator AI Logo" className="w-full h-full object-cover rounded-xl" />
           </div>
           <div>
             <h2 className="text-xl font-extrabold text-white">HARI INVESTIGATOR AI</h2>

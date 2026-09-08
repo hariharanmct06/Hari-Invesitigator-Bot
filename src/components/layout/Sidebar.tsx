@@ -71,11 +71,14 @@ export const Sidebar: React.FC = () => {
 
       {/* Footer Branding */}
       <div className="p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-300">
-          <span className="font-semibold text-[11px]">HARI INVESTIGATOR AI</span>
-          <button onClick={() => setIsAboutOpen(true)} className="text-slate-500 hover:text-blue-400">
-            <Info className="w-3.5 h-3.5" />
-          </button>
+        <div className="flex items-center gap-2">
+          <img src="/logo.jpg" alt="Logo" className="w-6 h-6 rounded-lg object-cover border border-blue-500/40" />
+          <div className="flex-1 min-w-0 flex items-center justify-between">
+            <span className="font-bold text-[11px] text-white truncate">HARI INVESTIGATOR AI</span>
+            <button onClick={() => setIsAboutOpen(true)} className="text-slate-500 hover:text-blue-400">
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
         <p className="text-[10px] text-slate-500 leading-tight">
           Created by Hari Bot & Business Solutions

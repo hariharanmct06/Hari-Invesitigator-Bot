@@ -75,8 +75,8 @@ export const Header: React.FC<Props> = ({ onOpenNewCase }) => {
             onClick={() => setIsAboutOpen(true)}
             className="flex items-center gap-2 cursor-pointer group"
           >
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/40 group-hover:scale-105 transition">
-              <Shield className="w-4 h-4 md:w-5 md:h-5" />
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl overflow-hidden border border-blue-500/40 shadow-lg shadow-blue-900/50 group-hover:scale-105 transition bg-slate-900 shrink-0">
+              <img src="/logo.jpg" alt="Hari Investigator AI Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-xs md:text-sm font-extrabold tracking-tight text-white flex items-center gap-1">
