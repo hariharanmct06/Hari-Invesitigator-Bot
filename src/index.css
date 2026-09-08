@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #0b0d10;
+    --bg-secondary: #12161f;
+    --bg-tertiary: #191e2b;
+    --bg-card: #141824;
+    --border-subtle: #232a3b;
+    --border-highlight: #333d54;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --status-verified: #10b981;
+    --status-review: #f59e0b;
+    --status-critical: #ef4444;
+    --status-info: #3b82f6;
+  }
+
+  .light-theme {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-card: #ffffff;
+    --border-subtle: #cbd5e1;
+    --border-highlight: #94a3b8;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --accent-blue: #2563eb;
+    --accent-blue-hover: #1d4ed8;
+    --status-verified: #059669;
+    --status-review: #d97706;
+    --status-critical: #dc2626;
+    --status-info: #2563eb;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Monospace typography for evidence IDs and hashes */
+  .font-mono-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-highlight);
+}
+
+/* Camera pulse animation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s infinite ease-in-out;
+}
+
+@keyframes scan-line {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+.animate-scan {
+  animation: scan-line 2.5s infinite linear;
+}
