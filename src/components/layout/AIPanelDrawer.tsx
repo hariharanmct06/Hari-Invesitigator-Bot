@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import { sendQueryToAIChat } from '../../services/aiService';
 import { Bot, Send, Sparkles, X } from 'lucide-react';
 
 interface Props {
@@ -30,7 +31,7 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
     'SUGGEST NEXT VERIFICATION STEPS'
   ];
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const query = textToSend || inputMessage;
     if (!query.trim()) return;
 
@@ -38,49 +39,39 @@ export const AIPanelDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
     if (!textToSend) setInputMessage('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      if (!currentCase || evidence.length === 0) {
-        setMessages(prev => [
-          ...prev,
-          {
-            sender: 'AI',
-            text: 'Insufficient evidence to determine this. Capture or upload evidence items into the case file to enable AI forensic analysis.'
-          }
-        ]);
-        setIsTyping(false);
-        return;
-      }
+    const response = await sendQueryToAIChat(query, currentCase, evidence);
+    setIsTyping(false);
 
-      let aiResponseText = '';
-      let confidence = 88;
-      let evidenceRef = 'EVD-IN-2026-000001';
+    if (response.success && response.data) {
+      let displayText = response.data.summaryText || '';
 
-      if (query.includes('SUMMARIZE')) {
-        aiResponseText = `### Case Summary: ${currentCase.caseNumber}\n\n- **Incident Date**: ${currentCase.incidentDate}\n- **Primary Breach**: Forced access at Dock B Door.\n- **Primary Vehicle**: Dark Blue SUV TN 38 AB 1234.\n- **Status**: ${evidence.length} evidence items, ${leads.length} active leads.`;
-        confidence = 94;
-      } else if (query.includes('INCONSISTENCIES')) {
-        aiResponseText = `### Detected Discrepancy:\n\n- **Witness Statement (Arumugam Perumal)** claims alarm chimed at **10:25 AM IST**.\n- **CCTV Evidence (EVD-IN-2026-000001)** proves door alarm triggered at **10:18:42 AM IST**.\n\n*Recommendation*: Re-interview manager regarding 6-minute discrepancy.`;
-        confidence = 91;
-        evidenceRef = 'EVD-IN-2026-000001';
-      } else if (query.includes('GAPS')) {
-        aiResponseText = `### Evidence Gap Analysis:\n\n1. **Driver Identity**: High tint on SUV windows prevented facial identification in CCTV.\n2. **Staging Bay Interior**: CAM-05 was offline for maintenance.\n\n*Suggested Action*: Query adjacent highway license readers.`;
-        confidence = 85;
-      } else {
-        aiResponseText = `Based on current evidence for **${currentCase.caseNumber}**, vehicle **TN 38 AB 1234** is connected to Dock Door B breach at 10:18:42 AM IST. Level 3 AI inference suggests exterior mechanical prying on door latch.`;
-        confidence = 86;
+      if (!displayText) {
+        if (response.data.observed && response.data.observed.length > 0) {
+          displayText = `### Observed Facts:\n` + response.data.observed.map(o => `- ${o}`).join('\n');
+        }
+        if (response.data.inference && response.data.inference.length > 0) {
+          displayText += `\n\n### Inferences:\n` + response.data.inference.map(i => `- ${i}`).join('\n');
+        }
       }
 
       setMessages(prev => [
         ...prev,
         {
           sender: 'AI',
-          text: aiResponseText,
-          confidence,
-          evidenceRef
+          text: displayText || 'Analysis complete.',
+          confidence: response.data?.confidence === 'HIGH' ? 95 : 82,
+          evidenceRef: response.data?.supportingEvidenceIds?.[0]
         }
       ]);
-      setIsTyping(false);
-    }, 700);
+    } else {
+      setMessages(prev => [
+        ...prev,
+        {
+          sender: 'AI',
+          text: response.error || 'Unable to connect to secure AI proxy service.'
+        }
+      ]);
+    }
   };
 
   if (!isOpen) return null;

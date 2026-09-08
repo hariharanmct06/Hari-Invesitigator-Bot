@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { StructuredAIAnswer } from '../../types/investigation';
+import { sendQueryToAIChat } from '../../services/aiService';
 import { Bot, Sparkles, Send, ShieldAlert, FileText, CheckCircle, Info } from 'lucide-react';
 
 export const HariAIAnalyst: React.FC = () => {
-  const { currentCase, evidence, leads } = useInvestigation();
+  const { currentCase, evidence } = useInvestigation();
   const [messages, setMessages] = useState<Array<{ sender: 'USER' | 'AI'; text?: string; structured?: StructuredAIAnswer }>>([
     {
       sender: 'AI',
@@ -29,63 +30,45 @@ export const HariAIAnalyst: React.FC = () => {
     'SUGGEST VERIFICATION STEPS'
   ];
 
-  const handleRunPrompt = (pText: string) => {
+  const handleRunPrompt = async (pText: string) => {
     if (!pText.trim()) return;
     setMessages(prev => [...prev, { sender: 'USER', text: pText }]);
     setQuery('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      if (evidence.length === 0) {
+    const response = await sendQueryToAIChat(pText, currentCase, evidence);
+    setIsTyping(false);
+
+    if (response.success && response.data) {
+      if (response.data.summaryText && (!response.data.observed || response.data.observed.length === 0)) {
+        setMessages(prev => [...prev, { sender: 'AI', text: response.data?.summaryText }]);
+      } else {
+        const structuredRes: StructuredAIAnswer = {
+          observed: response.data.observed || [],
+          inference: response.data.inference || [],
+          unknown: response.data.unknown || [],
+          supportingEvidenceIds: response.data.supportingEvidenceIds || [],
+          confidence: response.data.confidence || 'MEDIUM',
+          verificationRequired: response.data.verificationRequired ?? true
+        };
         setMessages(prev => [
           ...prev,
           {
             sender: 'AI',
-            text: 'Insufficient evidence to determine this. Capture or upload evidence items into the case file to enable AI forensic analysis.'
+            text: response.data?.summaryText,
+            structured: structuredRes
           }
         ]);
-        setIsTyping(false);
-        return;
       }
-
-      let structured: StructuredAIAnswer = {
-        observed: [
-          'Directly observed CCTV frame at 10:18:42 AM IST',
-          'License plate TN 38 AB 1234 recorded near Gate 2'
-        ],
-        inference: [
-          'Vehicle profile matches Dark Blue SUV chassis.',
-          'Mechanical prying marks on Dock B latch match exterior forced entry.'
-        ],
-        unknown: [
-          'Identity of individual operating vehicle TN 38 AB 1234 remains unconfirmed.'
-        ],
-        supportingEvidenceIds: evidence.map(e => e.evidenceId),
-        confidence: 'HIGH',
-        verificationRequired: true
-      };
-
-      if (pText.includes('INCONSISTENCIES')) {
-        structured = {
-          observed: [
-            'CCTV timestamp records door breach at 10:18:42 AM IST.',
-            'Witness statement (Arumugam Perumal) claims alarm chimed at 10:25 AM IST.'
-          ],
-          inference: [
-            '6-minute time discrepancy between physical sensor record and witness statement.'
-          ],
-          unknown: [
-            'Whether time gap is due to manager memory error or unrecorded activity.'
-          ],
-          supportingEvidenceIds: ['EVD-IN-2026-015-024'],
-          confidence: 'HIGH',
-          verificationRequired: true
-        };
-      }
-
-      setMessages(prev => [...prev, { sender: 'AI', structured }]);
-      setIsTyping(false);
-    }, 700);
+    } else {
+      setMessages(prev => [
+        ...prev,
+        {
+          sender: 'AI',
+          text: response.error || 'An error occurred while calling the secure AI proxy.'
+        }
+      ]);
+    }
   };
 
   return (
